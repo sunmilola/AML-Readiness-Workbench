@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Inferiva Structural — Readiness Workbench</title>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+body{margin:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif}.top{position:sticky;top:0;z-index:20;background:#0d2841;color:white;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px}.top a,.top button{color:white;border:1px solid rgba(255,255,255,.35);background:transparent;border-radius:10px;padding:8px 11px;text-decoration:none;cursor:pointer}.workbench-frame{width:100%;height:calc(100vh - 57px);border:0;display:block;background:#f5f7fb}.sync-status{font-size:12px;color:#d8e5f2}
+</style>
+</head>
+<body>
+<div class="top">
+  <div><strong>Inferiva Structural</strong> · Readiness Workbench <span id="syncStatus" class="sync-status"></span></div>
+  <div>
+    <a id="adminLink" href="admin.html" style="display:none">Administration</a>
+    <button id="logoutBtn">Logout</button>
+  </div>
+</div>
+<iframe id="workbenchFrame" class="workbench-frame" title="CBN Baseline Readiness Workbench"></iframe>
+<script type="module">
+import { requireAuth, logout, isAdminRole, listWorkbenchSnapshots, saveWorkbenchSnapshot, deleteWorkbenchSnapshot } from "./firebase-app.js";
+const SAVE_KEY="cbn_readiness_workbench_pro_v1";
+let currentProfile=null;
+function setStatus(text){document.getElementById("syncStatus").textContent=text?"· "+text:"";}
+function getLocalSnapshots(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||"[]");}catch(e){return[];}}
+function setLocalSnapshots(list){localStorage.setItem(SAVE_KEY,JSON.stringify(list||[]));}
+async function mergeCloudSnapshots(){const cloud=await listWorkbenchSnapshots(currentProfile);const local=getLocalSnapshots();const byId=new Map(local.map(s=>[s.id,s]));cloud.forEach(s=>{byId.set(s.snapshotId||s.id,{id:s.snapshotId||s.id,savedAt:s.savedAt||new Date().toISOString(),title:s.title||"Untitled assessment",data:s.data||{}});});setLocalSnapshots(Array.from(byId.values()).sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt))));}
+async function syncLatestSnapshot(){if(!currentProfile)return;const latest=getLocalSnapshots().sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt)))[0];if(!latest)return;setStatus("syncing");await saveWorkbenchSnapshot(currentProfile,latest);setStatus("saved");setTimeout(()=>setStatus(""),1800);}
+async function deleteCloudSnapshot(id){if(!currentProfile||!id)return;try{await deleteWorkbenchSnapshot(currentProfile,id);}catch(err){console.error("Cloud delete failed",err);}}
+function enhanceFrame(){const iframe=document.getElementById("workbenchFrame");const doc=iframe.contentDocument;if(!doc)return;const isDemo=currentProfile&&String(currentProfile.email||"").toLowerCase()==="demo@inferivastructural.com";const bind=()=>{const demoBtn=doc.getElementById("loadDemoBtn");if(demoBtn)demoBtn.style.display=isDemo?"inline-block":"none";const saveBtn=doc.getElementById("saveDraftBtn");if(saveBtn&&!saveBtn.dataset.firebaseBound){saveBtn.dataset.firebaseBound="1";saveBtn.addEventListener("click",()=>setTimeout(()=>syncLatestSnapshot().catch(console.error),250));}doc.querySelectorAll("[data-del]").forEach(btn=>{if(btn.dataset.firebaseBound)return;btn.dataset.firebaseBound="1";btn.addEventListener("click",()=>deleteCloudSnapshot(btn.dataset.del));});};bind();new MutationObserver(()=>bind()).observe(doc.body,{childList:true,subtree:true});}
+(async function init(){const session=await requireAuth();currentProfile=session.profile;sessionStorage.setItem("inferiva_current_user",JSON.stringify(currentProfile));document.getElementById("adminLink").style.display=isAdminRole(currentProfile.role)?"inline-block":"none";document.getElementById("logoutBtn").onclick=logout;try{setStatus("loading drafts");await mergeCloudSnapshots();setStatus("");}catch(err){console.error(err);setStatus("cloud sync unavailable");}const frame=document.getElementById("workbenchFrame");frame.onload=()=>enhanceFrame();frame.src="workbench-core-fixed.html?v=4";})();
+</script>
+</body>
+</html>

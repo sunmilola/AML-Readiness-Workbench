@@ -1,0 +1,737 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inferiva Structural — RegTech Infrastructure</title>
+  <meta name="description" content="Inferiva Structural delivers AML compliance intelligence for financial institutions." />
+  <style>
+    :root{
+      --bg:#F6F9FC;
+      --panel:#FFFFFF;
+      --panel-soft:#FCFEFF;
+      --text:#0A2540;
+      --muted:#425466;
+      --subtle:#697386;
+      --line:#D8E4EE;
+      --line-2:#E2EAF1;
+      --blue:#0A4B78;
+      --navy:#0A2540;
+      --blue-2:#2C8CC9;
+      --teal:#47C7C3;
+      --orange-bg:#FFF7ED;
+      --orange:#9A4D00;
+      --shadow:0 1px 2px rgba(16,24,40,.04),0 24px 54px rgba(12,74,120,.06);
+      --shadow-hover:0 1px 2px rgba(16,24,40,.04),0 30px 70px rgba(12,74,120,.10);
+      --radius:28px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
+    body{min-height:100vh}
+    a{text-decoration:none;color:inherit}
+    button{font:inherit}
+    .top-bg{position:fixed;inset:0 0 auto 0;height:520px;z-index:-1;background:linear-gradient(180deg,#FFF 0%,var(--bg) 70%,var(--bg) 100%)}
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+    .header{position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,.6);background:rgba(246,249,252,.88);backdrop-filter:blur(16px)}
+    .header-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 0;gap:20px}
+    .brand-btn,.nav-btn,.cta-btn,.pill-btn,.link-btn{border:0;background:none;cursor:pointer}
+    .brand-btn{text-align:left}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand svg{height:40px;width:auto;display:block}
+    .brand-text{line-height:1}
+    .brand-text .top{font-weight:700;letter-spacing:-.04em;font-size:26px;color:#1B355D}
+    .brand-text .bottom{margin-top:2px;font-weight:400;letter-spacing:-.03em;font-size:26px;color:#7A7D84}
+    .nav{display:flex;align-items:center;gap:28px}
+    .nav-btn{color:var(--muted);font-size:14px;font-weight:500;padding:4px 0}
+    .nav-btn.active,.nav-btn:hover{color:var(--text)}
+    .cta-btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:var(--navy);color:#fff;padding:10px 16px;font-size:14px;font-weight:600}
+    .page{display:none}
+    .page.active{display:block}
+    .section{padding:64px 0 80px}
+    .hero{padding:64px 0 96px}
+    .grid-2{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+    .cards-2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+    .cards-2-wide{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px}
+    .cards-2-tech{display:grid;grid-template-columns:.95fr 1.05fr;gap:40px}
+    .label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.24em;color:var(--blue)}
+    h1,h2,h3{margin:0}
+    .hero h1,.page-head h1{font-size:64px;line-height:1.02;letter-spacing:-.04em;font-weight:600}
+    .hero p,.page-head p{font-size:19px;line-height:1.7;color:var(--muted)}
+    .page-head{max-width:800px}
+    .page-head p{font-size:18px}
+    .hero-tag{display:inline-flex;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--muted);box-shadow:0 1px 1px rgba(16,24,40,.05);margin-bottom:24px}
+    .actions{display:flex;gap:16px;flex-wrap:wrap;margin-top:32px}
+    .pill-btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:12px 20px;font-size:14px;font-weight:600}
+    .pill-primary{background:var(--blue);color:#fff;box-shadow:0 12px 30px rgba(10,75,120,.18)}
+    .pill-secondary{background:#fff;border:1px solid var(--line);color:var(--text)}
+    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+    .card{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card.soft{background:var(--panel-soft)}
+    .card.hover{transition:.3s ease}
+    .card.hover:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+    .card-pad{padding:24px}
+    .mini-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.22em;color:var(--subtle)}
+    .muted{color:var(--muted)}
+    .subtle{color:var(--subtle)}
+    .hero-mockup-header{padding:24px 28px;border-bottom:1px solid #E5EEF5;background:linear-gradient(180deg,#FFFFFF 0%,#F6FAFD 100%)}
+    .hero-mockup-grid{display:grid;grid-template-columns:1.05fr .95fr}
+    .split-left{padding:24px;border-right:1px solid #E5EEF5}
+    .split-right{padding:24px}
+    .badge{display:inline-flex;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700}
+    .badge-blue{background:#ECF7FF;color:var(--blue)}
+    .badge-white{border:1px solid var(--line);background:#fff;color:var(--muted)}
+    .badge-orange{border:1px solid var(--line);background:var(--orange-bg);color:var(--orange)}
+    .metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
+    .mini-box{border:1px solid var(--line-2);background:#fff;border-radius:14px;padding:12px}
+    .risk-bars{margin-top:20px}
+    .bar-wrap{background:#ECF2F8;border-radius:999px;padding:4px;margin-bottom:8px}
+    .bar{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--blue) 0%,var(--blue-2) 100%);width:0;transition:1s ease}
+    .alert-box{border:1px solid var(--line);background:linear-gradient(135deg,#F7FCFF 0%,#EEF7FD 100%);border-radius:22px;padding:20px}
+    .network-box{border:1px solid var(--line);background:var(--panel-soft);border-radius:22px;padding:20px}
+    .center{display:flex;justify-content:center;align-items:center}
+    .feature-grid{margin-top:32px}
+    .icon-box{height:48px;width:48px;border-radius:16px;background:linear-gradient(135deg,#EEF8FF 0%,#E6F3FF 100%);display:flex;align-items:center;justify-content:center;color:var(--blue);transition:.3s ease}
+    .feature-card:hover .icon-box{transform:scale(1.05)}
+    .section-divider{border-top:1px solid var(--line-2)}
+    .list-stack{display:grid;gap:16px}
+    .list-item{display:flex;gap:16px;border:1px solid var(--line-2);background:var(--panel-soft);border-radius:20px;padding:20px}
+    .num{height:36px;width:36px;border-radius:999px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:0 0 auto}
+    .arch-header{padding:24px 28px;border-bottom:1px solid #E5EEF5;background:linear-gradient(180deg,#FFF 0%,#F6FAFD 100%)}
+    .arch-inner{padding:28px}
+    .stack-col{display:grid;gap:12px}
+    .stack-box{border:1px solid var(--line-2);background:#fff;border-radius:14px;padding:14px 16px}
+    .stack-box.blue{border-color:#B8D7EA;background:linear-gradient(135deg,#EEF8FF 0%,#E6F3FF 100%)}
+    .table{overflow:hidden}
+    .table-head,.table-row{display:grid;grid-template-columns:1fr 1fr}
+    .table-head{background:var(--panel-soft);border-bottom:1px solid var(--line-2);font-size:14px;font-weight:700}
+    .table-head > div,.table-row > div{padding:18px 24px}
+    .table-row:not(:last-child){border-bottom:1px solid var(--line-2)}
+    .table-row > div:nth-child(2),.table-head > div:nth-child(2){border-left:1px solid var(--line-2)}
+    .footer{border-top:1px solid var(--line-2);background:rgba(255,255,255,.8)}
+    .footer-inner{display:flex;justify-content:space-between;gap:12px;padding:28px 0;color:var(--subtle);font-size:14px}
+    .contact-grid{display:grid;grid-template-columns:.96fr 1.04fr}
+    .contact-left{padding:32px;border-right:1px solid var(--line-2);background:linear-gradient(180deg,#FFF 0%,#F7FBFF 100%)}
+    .contact-right{padding:32px}
+    .form-grid{display:grid;gap:16px;margin-top:24px}
+    input,textarea{width:100%;border:1px solid var(--line);background:#FDFEFF;border-radius:16px;padding:14px 16px;font:inherit;color:var(--text)}
+    textarea{min-height:132px;resize:vertical}
+    .submit-btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border:0;border-radius:999px;background:var(--blue);color:#fff;padding:12px 20px;font-size:14px;font-weight:600;box-shadow:0 12px 30px rgba(10,75,120,.18);cursor:pointer}
+    .contact-note{margin-top:12px;font-size:13px;color:var(--subtle)}
+    .arrow{display:inline-block;transform:translateY(1px)}
+    .hide-mobile{display:flex}
+    .workbench-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:32px}
+    .three-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+    .fade{opacity:0;transform:translateY(18px);transition:opacity .55s ease, transform .55s ease}
+    .fade.show{opacity:1;transform:none}
+    .network-svg circle,.network-svg line{transition:opacity .6s ease, transform .6s ease, stroke-dashoffset .8s ease}
+    .logo-contact{margin-bottom:20px}
+    @media (max-width: 1100px){
+      .grid-2,.cards-2-wide,.cards-2-tech,.workbench-grid,.contact-grid,.hero-mockup-grid{grid-template-columns:1fr}
+      .split-left{border-right:0;border-bottom:1px solid #E5EEF5}
+      .contact-left{border-right:0;border-bottom:1px solid var(--line-2)}
+      .grid-4{grid-template-columns:repeat(2,1fr)}
+      .grid-3,.three-grid{grid-template-columns:1fr}
+      .table-head,.table-row{grid-template-columns:1fr}
+      .table-row > div:nth-child(2),.table-head > div:nth-child(2){border-left:0;border-top:1px solid var(--line-2)}
+    }
+    @media (max-width: 820px){
+      .nav{display:none}
+      .hero h1,.page-head h1{font-size:42px}
+      .grid-4,.cards-2,.stat-grid{grid-template-columns:1fr}
+      .container{padding:0 18px}
+      .section,.hero{padding-top:42px;padding-bottom:56px}
+      .hide-mobile{display:none}
+      .header-inner{padding:12px 0}
+      .brand svg{height:32px}
+      .brand-text .top,.brand-text .bottom{font-size:20px}
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bg"></div>
+  <header class="header">
+    <div class="container header-inner">
+      <button class="brand-btn" data-page="home" aria-label="Inferiva Structural home">
+        <div class="brand">
+          <svg viewBox="0 0 180 120" aria-hidden="true">
+            <defs>
+              <linearGradient id="inferivaNavy" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#255E9E" />
+                <stop offset="100%" stop-color="#112E57" />
+              </linearGradient>
+              <linearGradient id="inferivaTeal" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#47C7C3" />
+                <stop offset="100%" stop-color="#1F9EA9" />
+              </linearGradient>
+              <linearGradient id="inferivaBlue" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#6BA5CF" />
+                <stop offset="100%" stop-color="#2375B7" />
+              </linearGradient>
+            </defs>
+            <polygon points="8,112 62,8 102,8 48,112" fill="url(#inferivaNavy)"></polygon>
+            <polygon points="70,96 104,34 144,34 110,96" fill="url(#inferivaTeal)"></polygon>
+            <polygon points="112,96 134,50 158,96" fill="url(#inferivaBlue)"></polygon>
+          </svg>
+          <div class="brand-text">
+            <div class="top">INFERIVA</div>
+            <div class="bottom">STRUCTURAL</div>
+          </div>
+        </div>
+      </button>
+
+      <nav class="nav" id="nav"></nav>
+
+      <button class="cta-btn" data-page="contact">Request demo <span class="arrow">→</span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page active" id="page-home">
+      <div class="container hero">
+        <div class="grid-2">
+          <div class="fade">
+            <div class="hero-tag">AML compliance intelligence for financial institutions</div>
+            <h1>RegTech infrastructure for modern AML compliance.</h1>
+            <p>Inferiva Structural delivers a compliance intelligence layer that sits on top of existing financial systems, helping institutions strengthen anti-money laundering capability without replacing core banking infrastructure.</p>
+            <div class="actions">
+              <button class="pill-btn pill-primary" data-page="platform">Explore platform <span class="arrow">→</span></button>
+              <button class="pill-btn pill-secondary" data-page="technology">View architecture</button>
+            </div>
+            <div class="stat-grid">
+              <div class="card card-pad fade">
+                <div class="mini-label">Category</div>
+                <div style="margin-top:8px;font-size:14px;font-weight:700">AML RegTech</div>
+              </div>
+              <div class="card card-pad fade">
+                <div class="mini-label">Deployment</div>
+                <div style="margin-top:8px;font-size:14px;font-weight:700">On-prem, private cloud, secure hosted</div>
+              </div>
+              <div class="card card-pad fade">
+                <div class="mini-label">Model</div>
+                <div style="margin-top:8px;font-size:14px;font-weight:700">Compliance wedge architecture</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fade">
+            <div class="card hero-mockup">
+              <div class="hero-mockup-header">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+                  <div>
+                    <div class="label">Product preview</div>
+                    <div style="margin-top:8px;font-size:32px;font-weight:600;letter-spacing:-.02em">Compliance intelligence workspace</div>
+                  </div>
+                  <div class="badge badge-white hide-mobile">Live platform view</div>
+                </div>
+              </div>
+              <div class="hero-mockup-grid">
+                <div class="split-left">
+                  <div class="card soft card-pad" style="border-radius:22px;box-shadow:none">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                      <div>
+                        <div class="mini-label">Customer 360</div>
+                        <div style="margin-top:8px;font-size:20px;font-weight:600">Unified risk profile</div>
+                      </div>
+                      <div class="badge badge-blue">High risk</div>
+                    </div>
+                    <div class="metric-grid">
+                      <div class="mini-box"><div class="subtle" style="font-size:12px">Identity</div><div style="margin-top:4px;font-weight:700">BVN + NIN verified</div></div>
+                      <div class="mini-box"><div class="subtle" style="font-size:12px">Risk score</div><div style="margin-top:4px;font-weight:700">82 / 100</div></div>
+                      <div class="mini-box"><div class="subtle" style="font-size:12px">Exposure</div><div style="margin-top:4px;font-weight:700">Cross-account network</div></div>
+                      <div class="mini-box"><div class="subtle" style="font-size:12px">Status</div><div style="margin-top:4px;font-weight:700">Investigation queued</div></div>
+                    </div>
+                    <div class="risk-bars">
+                      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px" class="mini-label"><span>Risk signals</span><span>Updated now</span></div>
+                      <div class="bar-wrap"><div class="bar" data-width="72"></div></div>
+                      <div class="bar-wrap"><div class="bar" data-width="48"></div></div>
+                      <div class="bar-wrap"><div class="bar" data-width="84"></div></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="split-right">
+                  <div style="display:grid;gap:16px">
+                    <div class="alert-box">
+                      <div style="display:flex;align-items:center;gap:12px">
+                        <div class="icon-box" style="background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.06)">⚡</div>
+                        <div>
+                          <div class="mini-label">Monitoring</div>
+                          <div style="font-weight:700">Suspicious activity alerts</div>
+                        </div>
+                      </div>
+                      <div style="margin-top:16px;display:grid;gap:12px;font-size:14px;color:var(--muted)">
+                        <div class="stack-box" style="border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.8)">Rapid transaction velocity increase</div>
+                        <div class="stack-box" style="border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.8)">Linked counterparty concentration detected</div>
+                      </div>
+                    </div>
+
+                    <div class="network-box">
+                      <div style="display:flex;align-items:center;gap:12px">
+                        <div class="icon-box" style="background:#ECF7FF">◎</div>
+                        <div style="font-weight:700">Relationship analysis</div>
+                      </div>
+                      <div class="center" style="margin-top:16px">
+                        <svg viewBox="0 0 280 150" class="network-svg" style="width:100%;max-width:280px">
+                          <line x1="60" y1="80" x2="140" y2="35" stroke="#9FC7DF" stroke-width="2.5" stroke-dasharray="120" stroke-dashoffset="120"></line>
+                          <line x1="140" y1="35" x2="220" y2="82" stroke="#9FC7DF" stroke-width="2.5" stroke-dasharray="120" stroke-dashoffset="120"></line>
+                          <line x1="60" y1="80" x2="145" y2="116" stroke="#9FC7DF" stroke-width="2.5" stroke-dasharray="120" stroke-dashoffset="120"></line>
+                          <line x1="145" y1="116" x2="220" y2="82" stroke="#9FC7DF" stroke-width="2.5" stroke-dasharray="120" stroke-dashoffset="120"></line>
+                          <circle cx="60" cy="80" r="16" fill="#0A4B78" style="opacity:0;transform-origin:center"></circle>
+                          <circle cx="140" cy="35" r="13" fill="#5BA9D8" style="opacity:0;transform-origin:center"></circle>
+                          <circle cx="220" cy="82" r="16" fill="#0A2540" style="opacity:0;transform-origin:center"></circle>
+                          <circle cx="145" cy="116" r="12" fill="#94CBEA" style="opacity:0;transform-origin:center"></circle>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+       </div>
+      </div>
+
+      <div class="container section" style="padding-top:0">
+        <div class="grid-4 feature-grid">
+          <div class="card hover card-pad feature-card fade">
+            <div class="icon-box">⌕</div>
+            <h3 style="margin-top:20px;font-size:24px;letter-spacing:-.02em">Identity intelligence</h3>
+            <p class="muted" style="font-size:15px;line-height:1.8">Resolve fragmented customer records with BVN and NIN-backed matching, verification, and unified customer views.</p>
+          </div>
+          <div class="card hover card-pad feature-card fade">
+            <div class="icon-box">✓</div>
+            <h3 style="margin-top:20px;font-size:24px;letter-spacing:-.02em">Risk intelligence</h3>
+            <p class="muted" style="font-size:15px;line-height:1.8">Apply explainable customer risk scoring and behavioural indicators to support risk-based AML monitoring.</p>
+          </div>
+          <div class="card hover card-pad feature-card fade">
+            <div class="icon-box">◎</div>
+            <h3 style="margin-top:20px;font-size:24px;letter-spacing:-.02em">Transaction intelligence</h3>
+            <p class="muted" style="font-size:15px;line-height:1.8">Enrich transaction activity with customer context, anomaly indicators, and relationship analysis.</p>
+          </div>
+          <div class="card hover card-pad feature-card fade">
+            <div class="icon-box">▤</div>
+            <h3 style="margin-top:20px;font-size:24px;letter-spacing:-.02em">Investigation support</h3>
+            <p class="muted" style="font-size:15px;line-height:1.8">Move from detection to action with alerts, investigation context, and suspicious activity reporting support.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-platform">
+      <div class="container section">
+        <div class="page-head fade">
+          <div class="label">Platform</div>
+          <h1 style="margin-top:12px">Compliance intelligence structured as a working platform.</h1>
+          <p>Inferiva Structural is built for institutions that need stronger AML capability, clearer customer risk visibility, and better investigative context while continuing to operate within existing financial systems.</p>
+        </div>
+        <div class="cards-2" style="margin-top:48px">
+          <div class="card hover card-pad fade"><div class="icon-box">⌕</div><h2 style="margin-top:20px;font-size:30px">Identity intelligence</h2><p class="muted" style="font-size:15px;line-height:1.8">Resolve fragmented customer records with BVN and NIN-backed matching, verification, and unified customer views.</p></div>
+          <div class="card hover card-pad fade"><div class="icon-box">✓</div><h2 style="margin-top:20px;font-size:30px">Risk intelligence</h2><p class="muted" style="font-size:15px;line-height:1.8">Apply explainable customer risk scoring and behavioural indicators to support risk-based AML monitoring.</p></div>
+          <div class="card hover card-pad fade"><div class="icon-box">◎</div><h2 style="margin-top:20px;font-size:30px">Transaction intelligence</h2><p class="muted" style="font-size:15px;line-height:1.8">Enrich transaction activity with customer context, anomaly indicators, and relationship analysis.</p></div>
+          <div class="card hover card-pad fade"><div class="icon-box">▤</div><h2 style="margin-top:20px;font-size:30px">Investigation support</h2><p class="muted" style="font-size:15px;line-height:1.8">Move from detection to action with alerts, investigation context, and suspicious activity reporting support.</p></div>
+        </div>
+
+        <div class="cards-2-wide" style="margin-top:48px">
+          <div class="card card-pad fade">
+            <div class="label">Who it serves</div>
+            <div style="display:grid;gap:16px;margin-top:24px">
+              <div class="stack-box" style="display:flex;align-items:center;gap:16px"><div class="icon-box">🏦</div><div style="font-weight:700">Tier-2 commercial banks</div></div>
+              <div class="stack-box" style="display:flex;align-items:center;gap:16px"><div class="icon-box">🏢</div><div style="font-weight:700">Microfinance banks</div></div>
+              <div class="stack-box" style="display:flex;align-items:center;gap:16px"><div class="icon-box">💳</div><div style="font-weight:700">Fintech lenders</div></div>
+              <div class="stack-box" style="display:flex;align-items:center;gap:16px"><div class="icon-box">▦</div><div style="font-weight:700">Payment service providers</div></div>
+            </div>
+          </div>
+          <div class="card card-pad fade">
+            <div class="label">Operating model</div>
+            <h2 style="margin-top:14px;font-size:38px;letter-spacing:-.03em">Built to strengthen compliance without core replacement.</h2>
+            <div class="list-stack" style="margin-top:24px">
+              <div class="list-item"><div class="num">1</div><p class="muted" style="margin:0;font-size:15px;line-height:1.8">Integrates through existing exports, APIs, and scheduled synchronisation patterns.</p></div>
+              <div class="list-item"><div class="num">2</div><p class="muted" style="margin:0;font-size:15px;line-height:1.8">Surfaces customer risk, transaction signals, and relationship context in a structured operational layer.</p></div>
+              <div class="list-item"><div class="num">3</div><p class="muted" style="margin:0;font-size:15px;line-height:1.8">Supports investigation and reporting workflows without forcing large-scale systems transformation.</p></div>
+            </div>
+            <button class="pill-btn pill-primary" data-page="contact" style="margin-top:24px">Discuss deployment fit <span class="arrow">→</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-workbench">
+      <div class="container section">
+        <div class="page-head fade">
+          <div class="label">CBN Workbench</div>
+          <h1 style="margin-top:12px">A deadline-ready CBN baseline readiness workbench.</h1>
+          <p>Inferiva Structural includes a dedicated Compliance Workbench designed to capture the mandated information required for CBN submission, assess current state, evidence controls, generate gap analysis, and produce a roadmap ahead of the June 10 deadline.</p>
+        </div>
+
+        <div class="workbench-grid" style="margin-top:48px">
+          <div class="card fade">
+            <div class="hero-mockup-header">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+                <div>
+                  <div class="label">Offering</div>
+                  <div style="margin-top:8px;font-size:32px;font-weight:600;letter-spacing:-.02em">CBN Baseline Readiness Workbench</div>
+                </div>
+                <div class="badge badge-orange">June 10 deadline</div>
+              </div>
+            </div>
+            <div class="hero-mockup-grid">
+              <div class="split-left">
+                <div class="card soft card-pad" style="border-radius:22px;box-shadow:none">
+                  <div class="mini-label">What it does</div>
+                  <div style="margin-top:16px;display:grid;gap:12px" class="muted">
+                    <div>Captures institution profile, governance, system scope, customer segments, and technology strategy.</div>
+                    <div>Scores baseline controls across AML solution coverage, CDD/KYC/KYB, sanctions and PEP screening, transaction monitoring, case management, reporting, security, and integration.</div>
+                    <div>Produces readiness scores, evidence coverage, gap summaries, immediate actions, and phased implementation roadmap outputs.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="split-right">
+                <div style="display:grid;gap:16px">
+                  <div class="alert-box">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div class="icon-box" style="background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.06)">✦</div>
+                      <div style="font-weight:700">Presentation-grade workflow</div>
+                    </div>
+                    <div class="muted" style="margin-top:12px;font-size:14px;line-height:1.8">Guided assessment flow, secure access, local draft saves, report preview, and exportable deliverables for deadline-driven submission cycles.</div>
+                  </div>
+                  <div class="network-box">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div class="icon-box" style="background:#ECF7FF">🔒</div>
+                      <div style="font-weight:700">Mandated data capture</div>
+                    </div>
+                    <div class="muted" style="margin-top:12px;font-size:14px;line-height:1.8">Supports roadmap deadlines, tracked progress, accountable owners, evidence gathering, and implementation-governance workflows.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-pad fade">
+            <div class="label">Key outcomes</div>
+            <div style="display:grid;gap:16px;margin-top:20px">
+              <div class="list-item"><div class="icon-box">✓</div><div><div style="font-size:22px;font-weight:600">Assessment engine</div><p class="muted" style="margin:8px 0 0;font-size:15px;line-height:1.8">Map controls to guideline requirements, capture evidence, score maturity, and maintain an auditable baseline readiness record.</p></div></div>
+              <div class="list-item"><div class="icon-box">▥</div><div><div style="font-size:22px;font-weight:600">Readiness analytics</div><p class="muted" style="margin:8px 0 0;font-size:15px;line-height:1.8">Generate readiness scores, evidence coverage views, gap summaries, phased remediation plans, and immediate action lists.</p></div></div>
+              <div class="list-item"><div class="icon-box">▤</div><div><div style="font-size:22px;font-weight:600">Submission workbench</div><p class="muted" style="margin:8px 0 0;font-size:15px;line-height:1.8">Prepare the mandated information pack, preview branded outputs, and export working papers and reports for deadline-driven submission cycles.</p></div></div>
+            </div>
+            <button class="pill-btn pill-primary" data-page="contact" style="margin-top:24px">Request workbench demo <span class="arrow">→</span></button>
+          </div>
+        </div>
+
+        <div class="three-grid" style="margin-top:48px">
+          <div class="card card-pad fade">
+            <div class="label">Included modules</div>
+            <div style="display:grid;gap:12px;margin-top:16px" class="muted">
+              <div>Institution profile and scope inventory</div>
+              <div>Control scoring and evidence capture</div>
+              <div>Governance and technology strategy capture</div>
+              <div>Results analytics and readiness scoring</div>
+              <div>Report preview and export pack</div>
+            </div>
+          </div>
+          <div class="card card-pad fade">
+            <div class="label">Control coverage</div>
+            <div style="display:grid;gap:12px;margin-top:16px" class="muted">
+              <div>AML solution coverage</div>
+              <div>CDD / KYC / KYB</div>
+              <div>Sanctions / PEP screening</div>
+              <div>Risk assessment and transaction monitoring</div>
+              <div>Case management, reporting, audit, security, and integration</div>
+            </div>
+          </div>
+          <div class="card card-pad fade">
+            <div class="label">Best fit</div>
+            <div style="display:grid;gap:12px;margin-top:16px" class="muted">
+              <div>Banks and financial institutions needing a structured CBN readiness submission workflow</div>
+              <div>Institutions that need auditable evidence gathering and gap remediation planning</div>
+              <div>Programmes operating against the June 10 submission deadline</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-technology">
+      <div class="container section">
+        <div class="page-head fade">
+          <div class="label">Technology</div>
+          <h1 style="margin-top:12px">Modular architecture for controlled financial environments.</h1>
+          <p>The platform connects to existing financial systems through secure exports, APIs, or scheduled synchronisation, then applies identity resolution, risk scoring, transaction enrichment, and investigation support through modular services.</p>
+        </div>
+
+        <div class="grid-3" style="margin-top:48px">
+          <div class="card hover card-pad fade"><div class="icon-box">◫</div><h2 style="margin-top:20px;font-size:30px">Integration layer</h2><p class="muted" style="font-size:15px;line-height:1.8">Connect through APIs, scheduled exports, and secure ingestion pipelines from core banking and adjacent systems.</p></div>
+          <div class="card hover card-pad fade"><div class="icon-box">↺</div><h2 style="margin-top:20px;font-size:30px">Modular services</h2><p class="muted" style="font-size:15px;line-height:1.8">Identity, risk, enrichment, alerting, and reporting services are structured to fit controlled banking environments.</p></div>
+          <div class="card hover card-pad fade"><div class="icon-box">◎</div><h2 style="margin-top:20px;font-size:30px">Flexible deployment</h2><p class="muted" style="font-size:15px;line-height:1.8">Deploy on-premise, in private cloud, or in secure hosted environments depending on data-governance posture.</p></div>
+        </div>
+
+        <div class="cards-2-tech" style="margin-top:48px">
+          <div class="card card-pad fade">
+            <div class="label">Deployment</div>
+            <div style="display:grid;gap:12px;margin-top:20px;font-size:15px;line-height:1.8" class="muted">
+              <div>On-premise deployment for institutions requiring ring-fenced environments and data residency control.</div>
+              <div>Private cloud deployment for organisations that want modern infrastructure within institution-controlled estates.</div>
+              <div>Secure hosted deployment for smaller institutions with lighter internal infrastructure footprints.</div>
+            </div>
+            <div class="grid-3" style="margin-top:24px">
+              <div class="mini-box" style="text-align:center"><div class="icon-box" style="margin:0 auto">🔒</div><div style="margin-top:12px;font-weight:700;font-size:14px">Data control</div></div>
+              <div class="mini-box" style="text-align:center"><div class="icon-box" style="margin:0 auto">✦</div><div style="margin-top:12px;font-weight:700;font-size:14px">Operational fit</div></div>
+              <div class="mini-box" style="text-align:center"><div class="icon-box" style="margin:0 auto">▥</div><div style="margin-top:12px;font-weight:700;font-size:14px">Scalable design</div></div>
+            </div>
+          </div>
+
+          <div class="card fade">
+            <div class="arch-header">
+              <div class="label">Visual architecture</div>
+              <div style="margin-top:8px;font-size:32px;font-weight:600;letter-spacing:-.02em">How Inferiva sits in the stack</div>
+            </div>
+            <div class="arch-inner">
+              <div class="grid-3" style="align-items:center">
+                <div class="card soft card-pad" style="box-shadow:none">
+                  <div class="mini-label">Input layer</div>
+                  <div class="stack-col" style="margin-top:14px">
+                    <div class="stack-box">Core banking</div>
+                    <div class="stack-box">KYC & customer records</div>
+                    <div class="stack-box">Payments & transaction feeds</div>
+                  </div>
+                </div>
+                <div class="stack-box blue">
+                  <div class="mini-label" style="color:var(--blue)">Inferiva structural</div>
+                  <div class="stack-col" style="margin-top:14px">
+                    <div class="stack-box" style="background:rgba(255,255,255,.8)">Identity resolution</div>
+                    <div class="stack-box" style="background:rgba(255,255,255,.8)">Risk scoring</div>
+                    <div class="stack-box" style="background:rgba(255,255,255,.8)">Transaction enrichment</div>
+                    <div class="stack-box" style="background:rgba(255,255,255,.8)">Network analysis</div>
+                    <div class="stack-box" style="background:rgba(255,255,255,.8)">Alert generation</div>
+                    <div class="stack-box" style="background:rgba(255,255,255,.8)">SAR support</div>
+                  </div>
+                </div>
+                <div class="card soft card-pad" style="box-shadow:none">
+                  <div class="mini-label">Outcome layer</div>
+                  <div class="stack-col" style="margin-top:14px">
+                    <div class="stack-box">Compliance review</div>
+                    <div class="stack-box">Investigation context</div>
+                    <div class="stack-box">Reporting preparation</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-compliance">
+      <div class="container section">
+        <div class="page-head fade">
+          <div class="label">Compliance</div>
+          <h1 style="margin-top:12px">Designed to support AML compliance operations.</h1>
+          <p>Inferiva Structural is built to support customer risk assessment, suspicious activity detection, investigation readiness, and reporting preparation within existing financial institution workflows.</p>
+        </div>
+
+        <div class="card table fade" style="margin-top:48px">
+          <div class="table-head">
+            <div>Compliance expectation</div>
+            <div>Inferiva capability</div>
+          </div>
+          <div class="table-row"><div>Customer risk profiling</div><div>Explainable risk scoring engine</div></div>
+          <div class="table-row"><div>Identity assurance</div><div>BVN and NIN verification workflows</div></div>
+          <div class="table-row"><div>Suspicious activity detection</div><div>Transaction intelligence and anomaly indicators</div></div>
+          <div class="table-row"><div>Relationship visibility</div><div>Network and circular flow analysis</div></div>
+          <div class="table-row"><div>Investigation support</div><div>Alert views and structured case context</div></div>
+          <div class="table-row"><div>SAR preparation</div><div>Structured suspicious activity reporting support</div></div>
+        </div>
+
+        <div class="grid-3" style="margin-top:48px">
+          <div class="card card-pad fade"><div class="num">1</div><p class="muted" style="margin:20px 0 0;font-size:15px;line-height:1.8">Customer risk visibility across fragmented financial records.</p></div>
+          <div class="card card-pad fade"><div class="num">2</div><p class="muted" style="margin:20px 0 0;font-size:15px;line-height:1.8">Suspicious activity context through enriched transaction analysis.</p></div>
+          <div class="card card-pad fade"><div class="num">3</div><p class="muted" style="margin:20px 0 0;font-size:15px;line-height:1.8">Stronger investigation support with alerts and structured reporting preparation.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-company">
+      <div class="container section">
+        <div class="cards-2-wide">
+          <div class="card card-pad fade">
+            <div class="label">Company</div>
+            <h1 style="margin-top:12px">Building structural AML compliance infrastructure.</h1>
+            <p class="muted" style="margin-top:24px;font-size:18px;line-height:1.8;max-width:760px">Inferiva Structural is a RegTech company focused on financial crime compliance infrastructure for financial institutions. We build the intelligence layer that helps organisations strengthen AML capability while working within existing banking environments.</p>
+          </div>
+          <div class="card card-pad fade">
+            <div class="label">Positioning</div>
+            <div style="margin-top:16px;font-size:32px;font-weight:600;letter-spacing:-.02em">Compliance intelligence, not system replacement.</div>
+            <p class="muted" style="margin-top:16px;font-size:15px;line-height:1.8">Our model is designed to integrate, strengthen, and accelerate compliance operations without forcing institutions into large-scale core transformation projects.</p>
+            <button class="pill-btn pill-primary" data-page="contact" style="margin-top:24px">Speak with us <span class="arrow">→</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-contact">
+      <div class="container section">
+        <div class="card fade">
+          <div class="contact-grid">
+            <div class="contact-left">
+              <div class="logo-contact">
+                <div class="brand">
+                  <svg viewBox="0 0 180 120" aria-hidden="true" style="height:48px">
+                    <defs>
+                      <linearGradient id="inferivaNavy2" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#255E9E" />
+                        <stop offset="100%" stop-color="#112E57" />
+                      </linearGradient>
+                      <linearGradient id="inferivaTeal2" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#47C7C3" />
+                        <stop offset="100%" stop-color="#1F9EA9" />
+                      </linearGradient>
+                      <linearGradient id="inferivaBlue2" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#6BA5CF" />
+                        <stop offset="100%" stop-color="#2375B7" />
+                      </linearGradient>
+                    </defs>
+                    <polygon points="8,112 62,8 102,8 48,112" fill="url(#inferivaNavy2)"></polygon>
+                    <polygon points="70,96 104,34 144,34 110,96" fill="url(#inferivaTeal2)"></polygon>
+                    <polygon points="112,96 134,50 158,96" fill="url(#inferivaBlue2)"></polygon>
+                  </svg>
+                  <div class="brand-text">
+                    <div class="top" style="font-size:30px">INFERIVA</div>
+                    <div class="bottom" style="font-size:30px">STRUCTURAL</div>
+                  </div>
+                </div>
+              </div>
+              <div class="label">Contact</div>
+              <h1 style="margin-top:12px">Discuss your compliance architecture.</h1>
+              <p class="muted" style="margin-top:20px;font-size:18px;line-height:1.8;max-width:580px">Speak with our team to explore deployment options, integration patterns, and how Inferiva Structural can support AML compliance operations in your environment.</p>
+              <div style="margin-top:28px;display:grid;gap:10px;font-size:14px" class="muted">
+                <div><strong style="color:var(--text)">Email:</strong> hello@inferivastructural.com</div>
+                <div><strong style="color:var(--text)">Focus:</strong> AML compliance RegTech</div>
+                <div><strong style="color:var(--text)">Deployment:</strong> On-prem, private cloud, secure hosted</div>
+              </div>
+            </div>
+            <div class="contact-right">
+              <h3 style="font-size:32px;letter-spacing:-.02em">Request a demo</h3>
+              <form class="form-grid" action="https://formsubmit.co/dadeleye@yahoo.com" method="POST">
+                <input type="text" name="name" placeholder="Full name" required />
+                <input type="email" name="email" placeholder="Work email" required />
+                <input type="text" name="institution" placeholder="Institution" required />
+                <textarea name="message" placeholder="Tell us about your compliance environment" required></textarea>
+
+                <!-- FormSubmit settings -->
+		<input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_next" value="http://localhost:5500/thanks.html" />
+                <input type="hidden" name="_subject" value="New demo request — Inferiva Structural" />
+
+                <button class="submit-btn" type="submit">Submit enquiry <span class="arrow">→</span></button>
+                <div class="contact-note">We’ll use your work email to respond to your demo request.</div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 Inferiva Structural</div>
+      <div>RegTech infrastructure for AML compliance</div>
+    </div>
+  </footer>
+
+  <script>
+    const pages = ["home","platform","workbench","technology","compliance","company","contact"];
+    const nav = document.getElementById("nav");
+    pages.forEach((id) => {
+      const labelMap = {
+        home:"Home",
+        platform:"Platform",
+        workbench:"CBN Workbench",
+        technology:"Technology",
+        compliance:"Compliance",
+        company:"Company",
+        contact:"Contact"
+      };
+      const btn = document.createElement("button");
+      btn.className = "nav-btn";
+      btn.textContent = labelMap[id];
+      btn.dataset.page = id;
+      nav.appendChild(btn);
+    });
+
+    function setActivePage(page){
+      pages.forEach((p) => {
+        const pageEl = document.getElementById("page-" + p);
+        if(pageEl) pageEl.classList.toggle("active", p === page);
+      });
+      document.querySelectorAll("[data-page]").forEach((el) => {
+        if(el.classList.contains("nav-btn")) el.classList.toggle("active", el.dataset.page === page);
+      });
+      window.scrollTo({top:0, behavior:"smooth"});
+      revealVisible();
+      animatePage(page);
+      history.replaceState(null, "", "#" + page);
+    }
+
+    function animatePage(page){
+      document.querySelectorAll("#page-" + page + " .bar").forEach((bar) => {
+        requestAnimationFrame(() => { bar.style.width = (bar.dataset.width || 0) + "%"; });
+      });
+
+      document.querySelectorAll("#page-" + page + " .network-svg line").forEach((line, i) => {
+        setTimeout(() => { line.style.strokeDashoffset = "0"; }, i * 120);
+      });
+      document.querySelectorAll("#page-" + page + " .network-svg circle").forEach((c, i) => {
+        setTimeout(() => { c.style.opacity = "1"; c.style.transform = "scale(1)"; }, i * 100);
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      const target = e.target.closest("[data-page]");
+      if(target){
+        const page = target.dataset.page;
+        if(page) setActivePage(page);
+      }
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if(entry.isIntersecting) entry.target.classList.add("show");
+      });
+    }, { threshold: 0.12 });
+
+    function revealVisible(){
+      document.querySelectorAll(".fade").forEach((el) => observer.observe(el));
+    }
+    revealVisible();
+
+    const initial = (location.hash || "#home").replace("#","");
+    setActivePage(pages.includes(initial) ? initial : "home");
+
+
+    const favicon = encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 120'>
+        <defs>
+          <linearGradient id='n' x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stop-color='#255E9E'/><stop offset='100%' stop-color='#112E57'/>
+          </linearGradient>
+          <linearGradient id='t' x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stop-color='#47C7C3'/><stop offset='100%' stop-color='#1F9EA9'/>
+          </linearGradient>
+          <linearGradient id='b' x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stop-color='#6BA5CF'/><stop offset='100%' stop-color='#2375B7'/>
+          </linearGradient>
+        </defs>
+        <polygon points='8,112 62,8 102,8 48,112' fill='url(#n)'/>
+        <polygon points='70,96 104,34 144,34 110,96' fill='url(#t)'/>
+        <polygon points='112,96 134,50 158,96' fill='url(#b)'/>
+      </svg>
+    `);
+    const link = document.createElement("link");
+    link.rel = "icon";
+    link.href = "data:image/svg+xml," + favicon;
+    document.head.appendChild(link);
+  </script>
+</body>
+</html>

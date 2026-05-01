@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn(){return request.auth != null;}
+    function currentUser(){return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;}
+    function isActive(){return signedIn() && currentUser().status == "Active";}
+    function isSystemAdmin(){return isActive() && currentUser().role == "System Administrator";}
+    function isTenantAdmin(){return isActive() && (currentUser().role == "Tenant Administrator" || currentUser().role == "Technology Admin");}
+    function sameTenant(tenantId){return isActive() && currentUser().tenantId == tenantId;}
+    match /tenants/{tenantId} {
+      allow read: if isSystemAdmin() || sameTenant(tenantId);
+      allow create, update: if isSystemAdmin();
+      allow delete: if false;
+    }
+    match /users/{userId} {
+      allow read: if isSystemAdmin() || request.auth.uid == userId || sameTenant(resource.data.tenantId);
+      allow create, update: if isSystemAdmin() || (isTenantAdmin() && request.resource.data.tenantId == currentUser().tenantId && request.resource.data.role != "System Administrator");
+      allow delete: if false;
+    }
+    match /assessments/{assessmentId} {
+      allow read: if sameTenant(resource.data.tenantId);
+      allow create: if sameTenant(request.resource.data.tenantId);
+      allow update: if sameTenant(resource.data.tenantId) && request.resource.data.tenantId == resource.data.tenantId;
+      allow delete: if isSystemAdmin() || (isTenantAdmin() && sameTenant(resource.data.tenantId));
+    }
+    match /evidence/{evidenceId} {
+      allow read: if sameTenant(resource.data.tenantId);
+      allow create: if sameTenant(request.resource.data.tenantId);
+      allow update: if false;
+      allow delete: if isSystemAdmin() || (isTenantAdmin() && sameTenant(resource.data.tenantId));
+    }
+    match /workbenchSnapshots/{snapshotId} {
+      allow read: if sameTenant(resource.data.tenantId);
+      allow create: if sameTenant(request.resource.data.tenantId);
+      allow update: if sameTenant(resource.data.tenantId) && request.resource.data.tenantId == resource.data.tenantId;
+      allow delete: if sameTenant(resource.data.tenantId) || isSystemAdmin();
+    }
+
+    match /reports/{reportId} {
+      allow read: if sameTenant(resource.data.tenantId);
+      allow create, update: if sameTenant(request.resource.data.tenantId);
+      allow delete: if isSystemAdmin();
+    }
+    match /auditLogs/{logId} {
+      allow read: if isSystemAdmin() || sameTenant(resource.data.tenantId);
+      allow create: if sameTenant(request.resource.data.tenantId);
+      allow update, delete: if false;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function currentUser(){return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data;}
+    function isActive(){return request.auth != null && currentUser().status == "Active";}
+    function sameTenant(tenantId){return isActive() && currentUser().tenantId == tenantId;}
+    function isSystemAdmin(){return isActive() && currentUser().role == "System Administrator";}
+    match /tenants/{tenantId}/{allPaths=**} {
+      allow read, write: if sameTenant(tenantId) || isSystemAdmin();
+    }
+  }
+}
