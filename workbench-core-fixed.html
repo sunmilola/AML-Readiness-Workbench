@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>INFERIVA STRUCTURAL – CBN Baseline Readiness Workbench</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;--card:#ffffff;--text:#0f172a;--muted:#64748b;--line:#dbe3ee;
+      --brand:#12355b;--brand2:#0d2841;--good:#1f7a4d;--mid:#c98200;--bad:#b42318;
+      --chip:#eef4fb;--shadow:0 8px 24px rgba(15,23,42,.08);--r:16px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1520px;margin:0 auto;padding:24px}
+    .hero,.card,.metric{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+    .hero{padding:22px 24px;margin-bottom:22px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+    h1,h2,h3{margin:0 0 8px;color:var(--brand)}
+    p{margin:0}
+    .muted{color:var(--muted);font-size:13px}
+    .pill,.badge{display:inline-block;border-radius:999px;font-size:12px;padding:5px 10px;border:1px solid var(--line)}
+    .pill{background:var(--chip)}
+    .badge-high{background:#fdecec;color:var(--bad);border-color:#f5c2c0}
+    .badge-medium{background:#fff6e8;color:var(--mid);border-color:#f6d39d}
+    .badge-low{background:#ebf9f1;color:var(--good);border-color:#b8e7cb}
+    .badge-mandatory{background:#fdecec;color:var(--bad);border-color:#f5c2c0}
+    .badge-recommended{background:#fff6e8;color:var(--mid);border-color:#f6d39d}
+    .badge-0,.badge-1{background:#fdecec;color:var(--bad);border-color:#f5c2c0}
+    .badge-2,.badge-3{background:#fff6e8;color:var(--mid);border-color:#f6d39d}
+    .badge-4,.badge-5{background:#ebf9f1;color:var(--good);border-color:#b8e7cb}
+    .card{padding:18px}
+    .tabbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+    .tab-btn{border:1px solid #cfd8e3;background:#fff;color:var(--brand);border-radius:999px;padding:10px 14px;cursor:pointer}
+    .tab-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+    .grid-2,.grid-3,.grid-4{display:grid;gap:16px}
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .grid-4{grid-template-columns:repeat(4,1fr)}
+    .metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+    .metric{padding:18px}
+    .metric .label{font-size:12px;color:var(--muted)}
+    .metric .value{font-size:30px;font-weight:700;margin-top:6px}
+    .metric .sub{font-size:12px;color:var(--muted);margin-top:4px}
+    label{display:block;font-size:12px;font-weight:700;margin:8px 0 6px}
+    input,select,textarea,button{font:inherit}
+    input,select,textarea{width:100%;border:1px solid #cfd8e3;border-radius:12px;padding:10px 12px;background:#fff}
+    textarea{min-height:90px;resize:vertical}
+    button{border:0;border-radius:12px;padding:10px 14px;cursor:pointer}
+    .btn{background:var(--brand);color:#fff}
+    .btn:hover{background:var(--brand2)}
+    .btn-alt{background:#fff;color:var(--brand);border:1px solid #cfd8e3}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+    .check-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px}
+    .check-item{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border:1px solid #edf1f6;border-radius:12px;background:#fff}
+    .check-item input{width:auto;margin-top:2px}
+    .control{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;background:#fbfcff}
+    .control-head{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .control-name{font-weight:700}
+    .control-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+    .subcontrol{border-radius:12px;background:#fff;padding:12px;margin-top:10px;border:1px solid #edf1f6}
+    .subcontrol-top{display:grid;grid-template-columns:1fr 220px;gap:12px;align-items:start}
+    .evidence-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+    .progress{height:10px;border-radius:999px;background:#e8eef6;overflow:hidden;width:240px}
+    .progress>div{height:100%;background:var(--brand)}
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;font-size:13px;vertical-align:top}
+    th{background:#f5f8fc;color:var(--brand)}
+    .summary-box{border:1px solid var(--line);border-radius:14px;background:#fafcff;padding:14px;white-space:pre-wrap;line-height:1.45}
+    .bars{display:grid;gap:10px}
+    .bar-row{display:grid;grid-template-columns:280px 1fr 70px;gap:10px;align-items:center}
+    .bar-track{height:12px;border-radius:999px;background:#e8eef6;overflow:hidden}
+    .bar-fill{height:100%;background:var(--brand)}
+    .note,.callout{padding:12px;border-radius:12px;font-size:13px}
+    .note{border:1px dashed #cad6e5;background:#fafcff}
+    .callout{border:1px solid var(--line);background:#fbfdff}
+    .hidden{display:none !important}
+    .save-item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;background:#fff}
+    .report-section{page-break-inside:avoid;margin-bottom:20px}
+    .subtabbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}
+    .subtab-btn{border:1px solid #cfd8e3;background:#fff;color:var(--brand);border-radius:999px;padding:8px 12px;cursor:pointer;font-size:13px}
+    .subtab-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+    @media (max-width:1200px){.metrics{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:900px){.metrics,.grid-2,.grid-3,.grid-4,.check-grid,.evidence-grid{grid-template-columns:1fr}.subcontrol-top,.bar-row{grid-template-columns:1fr}}
+    @media print{
+      body{background:#fff}.wrap{max-width:none;padding:0}.hero,.card,.metric{box-shadow:none}
+      .no-print{display:none !important}.tab-panel{display:block !important}
+      .print-report-only .tab-panel:not(.report-visible){display:none !important}
+    }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const SAVE_KEY='cbn_readiness_workbench_pro_v1';
+const SYSTEM_SCOPE_OPTIONS=['Core banking','Payments switch','Mobile banking','Internet banking','Cards','USSD / agent banking','Treasury','Trade finance','Remittance','Onboarding / KYC','CRM / customer master','Data warehouse / lake','AML platform','Fraud platform','Third-party identity providers','Other external integrations'];
+const CUSTOMER_SEGMENTS=['Retail','SME','Corporate','Public sector','Correspondent / FI','Agent banking','High-net-worth'];
+const MATURITY_LABELS=['0 - Not in place','1 - Ad hoc','2 - Basic','3 - Defined','4 - Managed','5 - Optimised'];
+
+const CONTROL_LIBRARY=[
+  {id:'AML_01',guidelineRef:'5.1',guidelineLabel:'AML Solution',section:'5.1 AML Solution',domain:'AML Solution',name:'Core automated AML solution coverage',requirement:'Mandatory',weight:5,subs:['Solution supports customer identification and verification','Solution supports customer risk assessment and profiling','Solution supports sanctions and watchlist screening','Solution supports PEP and high-risk customer screening','Solution supports transaction monitoring for ML/TF/PF risk','Solution supports case management and investigation','Solution supports regulatory and internal reporting','Solution supports audit, governance, and configuration trails','Solution includes relevant data protection and security controls']},
+  {id:'AML_02',guidelineRef:'5.1',guidelineLabel:'AML Solution',section:'5.1 AML Solution',domain:'AML Solution',name:'Proportionality, resilience, and upgrades',requirement:'Mandatory',weight:4,subs:['Solution is commensurate with institution size, complexity, customer base, and risk profile','Availability and resilience arrangements are documented','Disaster recovery arrangements prevent degradation of monitoring and screening','Solution is reviewed and upgraded when products, channels, or risks change','Fraud capabilities are segregated so AML effectiveness is not diluted']},
+  {id:'CDD_01',guidelineRef:'5.2',guidelineLabel:'CDD / KYC / KYB',section:'5.2 CDD / KYC / KYB',domain:'CDD/KYC/KYB',name:'End-to-end CDD, EDD, KYC, and KYB support',requirement:'Mandatory',weight:5,subs:['Solution enables end-to-end CDD, EDD, KYC, and KYB workflows','Risk-based CDD and EDD support periodic and event-driven reviews','Historical data and behavioural pattern analysis are used in due diligence','Beneficial ownership information can be captured and linked','Customer and related party profiles are available within monitoring workflows']},
+  {id:'CDD_02',guidelineRef:'5.2',guidelineLabel:'CDD / KYC / KYB',section:'5.2 CDD / KYC / KYB',domain:'CDD/KYC/KYB',name:'Unified customer risk view and data linkage',requirement:'Mandatory',weight:5,subs:['Transactions are assessed in the context of the full customer profile','KYC/KYB data is effectively linked to monitoring and screening','Customer risk assessments are available to investigators','Alert and case history is linked to customer records','Solution does not rely solely on raw transactional data']},
+  {id:'SAN_01',guidelineRef:'5.3',guidelineLabel:'Sanction Lists & PEP Screening',section:'5.3 Sanction Lists & PEP Screening',domain:'Sanctions / PEP',name:'Sanctions, watchlists, PEPs, and adverse media',requirement:'Mandatory',weight:5,subs:['Domestic and international sanctions lists are screened','PEP and high-risk customer screening is supported','Internal watchlists can be maintained','Adverse media monitoring is supported or integrated','Matching logic supports fuzzy or risk-based matching']},
+  {id:'SAN_02',guidelineRef:'5.3',guidelineLabel:'Sanction Lists & PEP Screening',section:'5.3 Sanction Lists & PEP Screening',domain:'Sanctions / PEP',name:'Screening governance and operational controls',requirement:'Mandatory',weight:4,subs:['List updates are timely and evidence is retained','Real-time interdiction or blocking is supported where required','Triage and resolution procedures are documented','Screening decisions are auditable','Escalation of true matches is controlled']},
+  {id:'RISK_01',guidelineRef:'5.4',guidelineLabel:'Risk Assessment',section:'5.4 Risk Assessment',domain:'Risk Assessment',name:'Enterprise and customer risk assessment',requirement:'Mandatory',weight:4,subs:['Solution supports enterprise risk assessment inputs','Customer dynamic risk scoring is supported','Risk classifications update based on changes in behaviour or profile','External or third-party data can inform risk assessment','Changes in risk classification are reportable']},
+  {id:'RISK_02',guidelineRef:'5.4',guidelineLabel:'Risk Assessment',section:'5.4 Risk Assessment',domain:'Risk Assessment',name:'Explainability and AI/ML governance',requirement:'Recommended',weight:3,subs:['AI/ML use is explainable to compliance and audit stakeholders','Model logic or outputs can be independently reviewed','Governance exists for adaptive learning or automated calibration','False-positive and false-negative impacts are monitored']},
+  {id:'TM_01',guidelineRef:'5.5',guidelineLabel:'Transaction Monitoring & Risk-Based Analyses',section:'5.5 Transaction Monitoring & Risk-Based Analyses',domain:'Transaction Monitoring',name:'Risk-based monitoring scenarios',requirement:'Mandatory',weight:5,subs:['Rules or scenarios cover ML/TF/PF risks','Monitoring considers products, channels, and customer segments','Behavioural patterns and typologies are analysed','Thresholds or scenarios can be tuned through controlled changes','Related-party or linked-party context can be considered']},
+  {id:'TM_02',guidelineRef:'5.5',guidelineLabel:'Transaction Monitoring & Risk-Based Analyses',section:'5.5 Transaction Monitoring & Risk-Based Analyses',domain:'Transaction Monitoring',name:'Alert quality, context, and calibration',requirement:'Mandatory',weight:5,subs:['Alerts include sufficient context for investigation','Rules, scenarios, and thresholds are periodically reviewed','Tuning and back-testing are documented','Service levels exist for alert handling','Control design aims to improve timeliness while controlling false positives']},
+  {id:'TM_03',guidelineRef:'5.5',guidelineLabel:'Transaction Monitoring & Risk-Based Analyses',section:'5.5 Transaction Monitoring & Risk-Based Analyses',domain:'Transaction Monitoring',name:'Automated closure governance',requirement:'Recommended',weight:3,subs:['Any automated alert closure is restricted to clearly low-risk scenarios','Closure rules are approved by AML governance stakeholders','Closure decisions rely on transaction context and current KYC/KYB data','No unresolved prior alerts or cases exist before auto-closure is allowed']},
+  {id:'FRD_01',guidelineRef:'5.6',guidelineLabel:'Fraud Monitoring and Detection',section:'5.6 Fraud Monitoring and Detection',domain:'Fraud Monitoring',name:'Fraud monitoring alignment with AML',requirement:'Mandatory',weight:3,subs:['Fraud controls operate in real time or near real time where needed','Fraud and AML architectures avoid blind spots or duplication','If a single platform supports both, AML and fraud rules are logically segregated','Fraud monitoring does not weaken AML/CFT/CPF controls']},
+  {id:'CASE_01',guidelineRef:'5.7',guidelineLabel:'Case Management',section:'5.7 Case Management',domain:'Case Management',name:'Enterprise case management workflow',requirement:'Mandatory',weight:4,subs:['Cases can be created, assigned, prioritised, and tracked','Maker-checker or equivalent investigation control exists','Case notes, evidence, and attachments are supported','Escalation workflow exists','Case audit trail is retained']},
+  {id:'CASE_02',guidelineRef:'5.7',guidelineLabel:'Case Management',section:'5.7 Case Management',domain:'Case Management',name:'Investigation support',requirement:'Recommended',weight:3,subs:['Investigators have a consolidated customer view','Alert, customer, and case history are linked','Transaction drill-down or link analysis is supported','Case ageing and outcome reporting are available']},
+  {id:'REP_01',guidelineRef:'5.8',guidelineLabel:'Reporting',section:'5.8 Reporting',domain:'Reporting',name:'Regulatory and management reporting',requirement:'Mandatory',weight:4,subs:['Internal compliance reporting is automated','External regulatory reporting can be generated accurately and timely','Reports support CBN, NFIU, and other competent authority requirements','Board or senior management MI is available','Reporting is complete and auditable']},
+  {id:'AUD_01',guidelineRef:'5.9',guidelineLabel:'Audit and Governance',section:'5.9 Audit and Governance',domain:'Audit & Governance',name:'Audit trails and governance',requirement:'Mandatory',weight:5,subs:['Audit trails are traceable and tamper-proof','User identity, timestamp, and action are captured','Configuration changes are logged','Governance committees or oversight mechanisms exist','Internal audit or periodic assurance is performed']},
+  {id:'INT_01',guidelineRef:'5.10',guidelineLabel:'System Integration & Scalability',section:'5.10 System Integration & Scalability',domain:'Integration & Scalability',name:'Integration with internal systems',requirement:'Mandatory',weight:4,subs:['Solution integrates with core banking, payments, onboarding, or relevant systems','Data exchange is secure and timely','Integration reduces fragmented risk views','APIs or interfaces support maintainable integration']},
+  {id:'INT_02',guidelineRef:'5.10',guidelineLabel:'System Integration & Scalability',section:'5.10 System Integration & Scalability',domain:'Integration & Scalability',name:'Scalability and change readiness',requirement:'Mandatory',weight:3,subs:['Solution can scale with growth in products, channels, or volumes','Institution can reconfigure controls as risk exposure changes','Performance does not materially degrade under expected load']},
+  {id:'SEC_01',guidelineRef:'5.11',guidelineLabel:'Security & Data Protection',section:'5.11 Security & Data Protection',domain:'Security & Data Protection',name:'Security, privacy, and resilience controls',requirement:'Mandatory',weight:5,subs:['Sensitive data is protected in transit and at rest','Access control is role-based and appropriate','Multi-factor authentication is available for privileged access','Data protection obligations are considered in design and operations','RTO/RPO or equivalent continuity objectives are defined']},
+  {id:'SEC_02',guidelineRef:'5.11',guidelineLabel:'Security & Data Protection',section:'5.11 Security & Data Protection',domain:'Security & Data Protection',name:'Data sovereignty and third-party security oversight',requirement:'Mandatory',weight:4,subs:['Cloud or shared service use is governed appropriately','Third-party providers are subject to due diligence','Vendors can support institution-specific configuration and audit needs','Operational resilience and cybersecurity obligations are considered']},
+  {id:'UI_01',guidelineRef:'5.12',guidelineLabel:'User Interface & Customisation',section:'5.12 User Interface & Customisation',domain:'UI & Customisation',name:'Usability and controlled customisation',requirement:'Recommended',weight:2,subs:['Users can navigate monitoring, screening, and case workflows efficiently','Controls or thresholds can be adjusted through governed workflows','Management information is clear and usable','Customisation does not undermine auditability']},
+  {id:'OTH_01',guidelineRef:'6 / 7',guidelineLabel:'Other Requirements / Enforcement',section:'6 Other Requirements / 7 Enforcement',domain:'Implementation & Third Parties',name:'Implementation governance and timelines',requirement:'Mandatory',weight:4,subs:['Institution maintains a vendor/third-party management approach for AML solutions','A roadmap exists to achieve compliance within applicable CBN timelines','Implementation progress is tracked and evidenced','Accountable owners are assigned for remediation activities']}
+];
+
+function blankAnswers(){const out={}; CONTROL_LIBRARY.forEach(c=>out[c.id]=c.subs.map(()=>0)); return out;}
+function blankEvidence(){const out={}; CONTROL_LIBRARY.forEach(c=>out[c.id]=c.subs.map(()=>({status:'Missing',policyRef:'',systemRef:'',screenshotRef:'',comment:''}))); return out;}
+function defaultState(){return {activeTab:'input',generated:false,assessmentTitle:'CBN Baseline Readiness Review',institutionName:'',institutionType:'DMB',riskTier:'High',deadline:'2026-06-10',channels:'',products:'',footprint:'',transactionProfile:'High',systemScope:[],customerSegments:[],governance:{mlro:'',boardCommittee:'',execSponsor:'',technologyOwner:'',projectManager:'',internalAuditOwner:'',staffingPlan:'',reportingCadence:'Monthly'},technologyStrategy:{currentAmlPlatform:'',screeningEngine:'',deploymentModel:'Hybrid',bvnIntegration:'Not planned',ninIntegration:'Not planned',dataArchitecture:'',integrationApproach:'',vendorModel:'',aiMlUsage:'Not planned',milestoneNotes:''},notes:'',answers:blankAnswers(),evidence:blankEvidence()};}
+let state=defaultState();
+state.activeBroaderSubtab='aml02';
+function saveSnapshot(){
+  const list=JSON.parse(localStorage.getItem(SAVE_KEY) || '[]');
+  const id=crypto.randomUUID();
+  list.push({id, savedAt:new Date().toISOString(), title: state.assessmentTitle || 'Untitled assessment', data: JSON.parse(JSON.stringify(state))});
+  localStorage.setItem(SAVE_KEY, JSON.stringify(list));
+}
+function loadSnapshots(){ return JSON.parse(localStorage.getItem(SAVE_KEY) || '[]').sort((a,b)=>b.savedAt.localeCompare(a.savedAt)); }
+function loadSnapshot(id){
+  const list=loadSnapshots();
+  const found=list.find(x=>x.id===id);
+  if(found){ state=found.data; render(); }
+}
+function deleteSnapshot(id){
+  const list=loadSnapshots().filter(x=>x.id!==id);
+  localStorage.setItem(SAVE_KEY, JSON.stringify(list));
+  render();
+}
+function loadTier2Demo(){
+  state=defaultState();
+  state.assessmentTitle='CBN Baseline Readiness Review – Tier 2 Bank Demo';
+  state.institutionName='Example Tier 2 Bank Plc';
+  state.institutionType='DMB'; state.riskTier='High'; state.deadline='2026-06-10';
+  state.channels='Branch, Mobile App, Internet Banking, USSD, ATM, Agency Banking';
+  state.products='Retail deposits, SME accounts, cards, domestic transfers, remittances, trade services';
+  state.footprint='Nigeria with regional concentration in Lagos, Abuja, Port Harcourt, Kano';
+  state.transactionProfile='High';
+  state.systemScope=['Core banking','Payments switch','Mobile banking','Internet banking','Cards','USSD / agent banking','Treasury','Trade finance','Onboarding / KYC','CRM / customer master','AML platform','Fraud platform','Third-party identity providers'];
+  state.customerSegments=['Retail','SME','Corporate','Public sector','Agent banking','High-net-worth'];
+  state.governance={mlro:'Chief Compliance Officer / MLRO',boardCommittee:'Board Risk Management Committee',execSponsor:'Deputy Managing Director, Operations & Technology',technologyOwner:'Chief Information Officer',projectManager:'Enterprise Change & Transformation Office',internalAuditOwner:'Head of Internal Audit',staffingPlan:'Dedicated AML transformation squad, 6 technology FTEs, 4 compliance SMEs, 2 data engineers, vendor delivery team',reportingCadence:'Bi-weekly'};
+  state.technologyStrategy={currentAmlPlatform:'Legacy rules-based AML monitoring platform with separate sanctions screening module',screeningEngine:'Third-party sanctions/watchlist screening tool integrated with onboarding and batch refresh',deploymentModel:'Hybrid',bvnIntegration:'Implemented',ninIntegration:'In progress',dataArchitecture:'AML monitoring currently consumes transactions nightly from core banking and payments switch; customer/KYC data is partly integrated through a staging layer. No fully unified AML data mart yet.',integrationApproach:'API and batch integration strategy: priority interfaces are core banking, digital channels, onboarding/KYC, sanctions screening, fraud platform, and case management.',vendorModel:'Existing AML vendor retained for baseline monitoring; specialist delivery partner engaged for data integration, customer risk linkage, and roadmap execution.',aiMlUsage:'In pilot',milestoneNotes:'Phase 1 focuses on KYC/customer linkage, sanctions governance, case workflow, and reporting uplift. Phase 2 targets alert quality, dynamic risk scoring, and broader integration. Phase 3 covers AI/ML explainability and optimisation.'};
+  state.notes='Illustrative Tier 2 bank example with evidence fields populated to show audit-ready working paper behaviour.';
+  state.answers={AML_01:[4,2,4,4,4,2,2,2,4],AML_02:[4,2,2,2,4],CDD_01:[4,2,2,2,2],CDD_02:[2,2,2,2,0],SAN_01:[4,4,2,0,2],SAN_02:[2,0,2,2,2],RISK_01:[2,2,2,2,0],RISK_02:[0,2,0,2],TM_01:[4,2,4,2,0],TM_02:[2,2,0,2,2],TM_03:[0,0,0,0],FRD_01:[4,2,4,2],CASE_01:[2,0,2,2,2],CASE_02:[2,2,0,2],REP_01:[2,2,2,4,2],AUD_01:[2,2,2,4,2],INT_01:[2,2,0,2],INT_02:[4,2,2],SEC_01:[4,4,2,2,2],SEC_02:[2,2,2,2],UI_01:[4,2,2,4],OTH_01:[2,4,2,2]};
+  function setE(c,i,status,policy,system,screenshot,comment){state.evidence[c][i]={status,policyRef:policy,systemRef:system,screenshotRef:screenshot,comment};}
+  setE('AML_01',0,'Available','KYC Policy v3.1 s4','Onboarding Platform','AML-01-01','Customer identification controls are documented and operating.');
+  setE('AML_01',1,'Partial','Enterprise Risk Methodology v2','Legacy AML Platform','AML-01-02','Risk profiling exists but is not fully dynamic.');
+  setE('AML_01',2,'Available','Sanctions Procedure v2.2','Screening Engine','SAN-01-01','Screening engine operational.');
+  setE('AML_01',3,'Available','PEP Screening SOP','Screening Engine','SAN-01-02','PEP checks integrated at onboarding.');
+  setE('AML_01',4,'Available','TM Operating Standard','Legacy AML Platform','TM-01-01','Core monitoring scenarios active.');
+  setE('AML_01',5,'Partial','Case Handling SOP','Case Queue Tool','CASE-01-01','Maker-checker and attachment controls incomplete.');
+  setE('AML_01',6,'Partial','MI Reporting SOP','Reporting Portal','REP-01-01','Reporting exists but not fully automated.');
+  setE('AML_01',7,'Partial','Change Governance Standard','Legacy AML Platform','AUD-01-01','Audit trails exist but control evidence is incomplete.');
+  setE('AML_01',8,'Available','Information Security Policy','IAM / SIEM','SEC-01-01','Core security controls in place.');
+  CONTROL_LIBRARY.forEach(control=>{
+    control.subs.forEach((sub,idx)=>{
+      if(state.evidence[control.id][idx].status==='Missing'){
+        const score=state.answers[control.id][idx];
+        const status=score>=4?'Available':score>=2?'Partial':'Missing';
+        state.evidence[control.id][idx]={status,policyRef:status==='Missing'?'':`${control.id} Policy Ref ${idx+1}`,systemRef:status==='Missing'?'':`${control.domain} Module`,screenshotRef:status==='Missing'?'':`${control.id}-${String(idx+1).padStart(2,'0')}`,comment:status==='Missing'?'Evidence not yet captured.':(status==='Partial'?'Capability exists but evidence is incomplete or fragmented.':'Evidence available and referenced.')};
+      }
+    });
+  });
+  state.generated=false; state.activeTab='input'; state.activeBroaderSubtab='aml02'; render();
+}
+function ownerFor(domain){const map={'AML Solution':'Compliance + Technology','CDD/KYC/KYB':'Compliance + Operations','Sanctions / PEP':'Compliance','Risk Assessment':'Compliance + Risk','Transaction Monitoring':'Compliance + Technology','Fraud Monitoring':'Fraud + Compliance','Case Management':'Compliance Operations','Reporting':'Compliance + Finance','Audit & Governance':'Compliance + Internal Audit','Integration & Scalability':'Technology','Security & Data Protection':'Technology + DPO','UI & Customisation':'Technology + Operations','Implementation & Third Parties':'PMO + Vendor Management'}; return map[domain] || 'Programme Owner';}
+function timelineFor(priority){return priority==='High'?'0-3 months':priority==='Medium'?'3-6 months':'6-12 months';}
+function dependencyFor(control){if(control.id.startsWith('CDD')) return 'Customer master / KYC data quality'; if(control.id.startsWith('SAN')) return 'Screening engine and data feeds'; if(control.id.startsWith('INT')) return 'System/data integration'; if(control.id.startsWith('SEC')) return 'Security architecture approval'; return 'Programme governance';}
+function riskFactorFor(control){if(['AML Solution','Transaction Monitoring','CDD/KYC/KYB','Sanctions / PEP'].includes(control.domain) && state.riskTier==='High') return 1.15; if(['Security & Data Protection','Reporting','Audit & Governance'].includes(control.domain) && state.riskTier!=='Low') return 1.1; return 1.0;}
+function evidenceCompleteness(ev){if(ev.status==='Available' && (ev.policyRef||ev.systemRef||ev.screenshotRef)) return 1; if(ev.status==='Partial' || ev.policyRef || ev.systemRef || ev.screenshotRef || ev.comment) return 0.5; return 0;}
+function compute(){
+  let earned=0,max=0,evidencePoints=0,evidenceMax=0; const domains={},roadmap=[],currentRows=[],phaseBuckets={'Phase 1':0,'Phase 2':0,'Phase 3':0};
+  CONTROL_LIBRARY.forEach(control=>{
+    const res=state.answers[control.id]||[]; let controlEarned=0; const factor=riskFactorFor(control);
+    res.forEach((score,idx)=>{
+      const ev=state.evidence[control.id][idx]; const evComp=evidenceCompleteness(ev);
+      evidencePoints += evComp; evidenceMax += 1; controlEarned += score;
+      currentRows.push({guidelineRef:control.guidelineRef,guidelineLabel:control.guidelineLabel,section:control.section,domain:control.domain,control:control.name,subControl:control.subs[idx],requirement:control.requirement,maturityScore:score,maturityLabel:MATURITY_LABELS[score],evidenceStatus:ev.status,policyRef:ev.policyRef,systemRef:ev.systemRef,screenshotRef:ev.screenshotRef,comment:ev.comment});
+      if(score<5){
+        const priority=(control.requirement==='Mandatory' && score<=1) ? 'High' : (control.requirement==='Mandatory' && score<=3) ? 'Medium' : (score<=2 ? 'Medium' : 'Low');
+        const phase=priority==='High'?'Phase 1':priority==='Medium'?'Phase 2':'Phase 3';
+        phaseBuckets[phase]+=1;
+        roadmap.push({guidelineRef:control.guidelineRef,guidelineLabel:control.guidelineLabel,priority,phase,domain:control.domain,section:control.section,control:control.name,maturityScore:score,maturityLabel:MATURITY_LABELS[score],action:(score<=1?'Establish and evidence capability: ':'Strengthen and document capability: ')+control.subs[idx],owner:ownerFor(control.domain),timeline:timelineFor(priority),dependency:dependencyFor(control),mandatory:control.requirement,evidenceStatus:ev.status});
+      }
+    });
+    const weightedEarned=(controlEarned/(control.subs.length*5))*100*control.weight*factor; const weightedMax=100*control.weight*factor;
+    if(!domains[control.domain]) domains[control.domain]={earned:0,max:0};
+    domains[control.domain].earned += weightedEarned; domains[control.domain].max += weightedMax;
+    earned += weightedEarned; max += weightedMax;
+  });
+  roadmap.sort((a,b)=>({'High':0,'Medium':1,'Low':2}[a.priority]-({'High':0,'Medium':1,'Low':2}[b.priority]) || a.domain.localeCompare(b.domain) || a.action.localeCompare(b.action)));
+  const domainScores=Object.entries(domains).map(([domain,v])=>({domain,score:v.max?(v.earned/v.max*100):0})).sort((a,b)=>a.domain.localeCompare(b.domain));
+  const overall=max?earned/max*100:0; const avgMaturity=currentRows.length?currentRows.reduce((s,r)=>s+r.maturityScore,0)/currentRows.length:0; const evidenceCoverage=evidenceMax?evidencePoints/evidenceMax*100:0;
+  const gapCounts={high:roadmap.filter(x=>x.priority==='High').length,medium:roadmap.filter(x=>x.priority==='Medium').length,low:roadmap.filter(x=>x.priority==='Low').length};
+  const domainGapCounts={}; roadmap.forEach(r=>domainGapCounts[r.domain]=(domainGapCounts[r.domain]||0)+1);
+  const topGapDomains=Object.entries(domainGapCounts).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([domain,count])=>({domain,count}));
+  const evidenceByDomain={}; currentRows.forEach(r=>{evidenceByDomain[r.domain]=evidenceByDomain[r.domain]||{p:0,m:0}; evidenceByDomain[r.domain].p += evidenceCompleteness({status:r.evidenceStatus,policyRef:r.policyRef,systemRef:r.systemRef,screenshotRef:r.screenshotRef,comment:r.comment}); evidenceByDomain[r.domain].m += 1;});
+  const evidenceRows=Object.entries(evidenceByDomain).map(([domain,v])=>({domain,coverage:v.m? v.p/v.m*100:0})).sort((a,b)=>b.coverage-a.coverage);
+  const missingEvidenceRows=currentRows.filter(r=>r.maturityScore>=2 && r.evidenceStatus==='Missing');
+  const guidelineCoverage={}; currentRows.forEach(r=>guidelineCoverage[r.guidelineRef]=(guidelineCoverage[r.guidelineRef]||0)+1);
+  const guidelineRows=Object.entries(guidelineCoverage).sort((a,b)=>a[0].localeCompare(b[0])).map(([ref,count])=>({ref,count,gaps:currentRows.filter(r=>r.guidelineRef===ref&&r.maturityScore<5).length,avg:currentRows.filter(r=>r.guidelineRef===ref).reduce((s,r)=>s+r.maturityScore,0)/count}));
+  return {overall,avgMaturity,evidenceCoverage,domainScores,roadmap,phaseBuckets,currentRows,gapCounts,topGapDomains,evidenceRows,missingEvidenceRows,guidelineRows};
+}
+function summaryText(calc){
+  return `Executive summary
+
+Institution: ${state.institutionName || 'Not provided'}
+Institution type: ${state.institutionType}
+Overall readiness: ${calc.overall.toFixed(1)}%
+Average control maturity: ${calc.avgMaturity.toFixed(2)} / 5
+Evidence coverage: ${calc.evidenceCoverage.toFixed(1)}%
+
+Risk context
+${state.institutionType} with ${(state.transactionProfile || 'unspecified').toLowerCase()} transaction profile, ${(state.riskTier || 'unspecified').toLowerCase()} inherent risk, products covering ${state.products || 'unspecified scope'}, and channels across ${state.channels || 'unspecified channels'}.
+
+Scope covered
+Systems: ${state.systemScope.length ? state.systemScope.join(', ') : 'Not defined'}
+Customer segments: ${state.customerSegments.length ? state.customerSegments.join(', ') : 'Not defined'}
+
+Governance
+Board oversight: ${state.governance.boardCommittee || 'Not captured'}
+MLRO / compliance owner: ${state.governance.mlro || 'Not captured'}
+Executive sponsor: ${state.governance.execSponsor || 'Not captured'}
+Technology owner: ${state.governance.technologyOwner || 'Not captured'}
+
+Technology strategy
+Current AML platform: ${state.technologyStrategy.currentAmlPlatform || 'Not captured'}
+BVN integration: ${state.technologyStrategy.bvnIntegration}
+NIN integration: ${state.technologyStrategy.ninIntegration}
+Deployment model: ${state.technologyStrategy.deploymentModel}
+AI/ML usage: ${state.technologyStrategy.aiMlUsage}
+
+Roadmap summary
+Phase 1 actions: ${calc.phaseBuckets['Phase 1']}
+Phase 2 actions: ${calc.phaseBuckets['Phase 2']}
+Phase 3 actions: ${calc.phaseBuckets['Phase 3']}
+CBN roadmap deadline: ${state.deadline || 'Not provided'}`;
+}
+function downloadText(filename, content, mime='text/plain'){const blob=new Blob([content],{type:mime+';charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1200);}
+function escapeHtml(str){return String(str ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');}
+function reportHtml(calc){return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CBN Roadmap Report</title><style>body{font-family:Arial,sans-serif;color:#111;padding:28px}h1,h2{color:#12355b}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left;font-size:12px}th{background:#f3f6fb}.summary{white-space:pre-wrap;border:1px solid #ccc;padding:12px;margin-bottom:18px}</style></head><body><h1>CBN Baseline Readiness Report</h1><div class="summary">${escapeHtml(summaryText(calc))}</div><h2>Domain Scores</h2><table><thead><tr><th>Domain</th><th>Score</th></tr></thead><tbody>${calc.domainScores.map(d=>`<tr><td>${escapeHtml(d.domain)}</td><td>${d.score.toFixed(1)}%</td></tr>`).join('')}</tbody></table><h2>Implementation Roadmap</h2><table><thead><tr><th>Priority</th><th>Phase</th><th>Guideline</th><th>Domain</th><th>Action</th><th>Owner</th><th>Timeline</th></tr></thead><tbody>${calc.roadmap.map(r=>`<tr><td>${r.priority}</td><td>${r.phase}</td><td>${escapeHtml(r.guidelineRef)} ${escapeHtml(r.guidelineLabel)}</td><td>${escapeHtml(r.domain)}</td><td>${escapeHtml(r.action)}</td><td>${escapeHtml(r.owner)}</td><td>${escapeHtml(r.timeline)}</td></tr>`).join('')}</tbody></table></body></html>`;}
+function mdCurrentState(calc){let out=`# Current State Assessment
+
+**Institution:** ${state.institutionName || 'Not provided'}
+
+**Overall readiness:** ${calc.overall.toFixed(1)}%
+**Average control maturity:** ${calc.avgMaturity.toFixed(2)} / 5
+**Evidence coverage:** ${calc.evidenceCoverage.toFixed(1)}%
+
+## Domain Scores
+
+| Domain | Score |
+|---|---:|
+`; calc.domainScores.forEach(d=> out += `| ${d.domain} | ${d.score.toFixed(1)}% |
+`); return out;}
+function mdGapAnalysis(calc){let out=`# Gap Analysis Against Baseline
+
+| Priority | Phase | Guideline | Domain | Control | Maturity | Evidence | Gap |
+|---|---|---|---|---|---|---|---|
+`; calc.roadmap.forEach(item=> out += `| ${item.priority} | ${item.phase} | ${item.guidelineRef} ${item.guidelineLabel} | ${item.domain} | ${item.control} | ${item.maturityLabel} | ${item.evidenceStatus} | ${item.action} |
+`); return out;}
+function mdRoadmap(calc){let out=`# Implementation Roadmap
+
+**Phase 1:** ${calc.phaseBuckets['Phase 1']} actions  
+**Phase 2:** ${calc.phaseBuckets['Phase 2']} actions  
+**Phase 3:** ${calc.phaseBuckets['Phase 3']} actions
+
+| Priority | Phase | Guideline | Domain | Action | Owner | Timeline | Dependency |
+|---|---|---|---|---|---|---|---|
+`; calc.roadmap.forEach(item=> out += `| ${item.priority} | ${item.phase} | ${item.guidelineRef} ${item.guidelineLabel} | ${item.domain} | ${item.action} | ${item.owner} | ${item.timeline} | ${item.dependency} |
+`); return out;}
+function mdGovernance(){return `# Governance Summary
+
+## Governance Structure
+- **Board oversight:** ${state.governance.boardCommittee || 'Not captured'}
+- **MLRO / Compliance owner:** ${state.governance.mlro || 'Not captured'}
+- **Executive sponsor:** ${state.governance.execSponsor || 'Not captured'}
+- **Technology owner:** ${state.governance.technologyOwner || 'Not captured'}
+- **Programme manager:** ${state.governance.projectManager || 'Not captured'}
+- **Internal audit owner:** ${state.governance.internalAuditOwner || 'Not captured'}
+- **Reporting cadence:** ${state.governance.reportingCadence || 'Not captured'}
+
+## Resourcing Summary
+${state.governance.staffingPlan || 'Not captured'}
+`;}
+function mdTechnology(){return `# Technology Strategy
+
+## Current State
+- **Current AML platform:** ${state.technologyStrategy.currentAmlPlatform || 'Not captured'}
+- **Screening engine:** ${state.technologyStrategy.screeningEngine || 'Not captured'}
+- **Deployment model:** ${state.technologyStrategy.deploymentModel}
+- **BVN integration:** ${state.technologyStrategy.bvnIntegration}
+- **NIN integration:** ${state.technologyStrategy.ninIntegration}
+- **AI/ML usage:** ${state.technologyStrategy.aiMlUsage}
+
+## Data Architecture
+${state.technologyStrategy.dataArchitecture || 'Not captured'}
+
+## Integration Approach
+${state.technologyStrategy.integrationApproach || 'Not captured'}
+
+## Vendor / Third-Party Model
+${state.technologyStrategy.vendorModel || 'Not captured'}
+
+## Milestone Notes
+${state.technologyStrategy.milestoneNotes || 'Not captured'}
+`;}
+function csvCurrentState(calc){let rows=['guideline_ref,guideline_label,section,domain,control,sub_control,requirement,maturity_score,maturity_label,evidence_status,policy_ref,system_ref,screenshot_ref,comment']; calc.currentRows.forEach(r=>rows.push([r.guidelineRef,r.guidelineLabel,r.section,r.domain,r.control,r.subControl,r.requirement,r.maturityScore,r.maturityLabel,r.evidenceStatus,r.policyRef,r.systemRef,r.screenshotRef,r.comment].map(v=>`"${String(v).replaceAll('"','""')}"`).join(','))); return rows.join('\n');}
+function csvGap(calc){let rows=['priority,phase,guideline_ref,guideline_label,domain,control,maturity_score,maturity_label,evidence_status,action,owner,timeline,dependency']; calc.roadmap.forEach(r=>rows.push([r.priority,r.phase,r.guidelineRef,r.guidelineLabel,r.domain,r.control,r.maturityScore,r.maturityLabel,r.evidenceStatus,r.action,r.owner,r.timeline,r.dependency].map(v=>`"${String(v).replaceAll('"','""')}"`).join(','))); return rows.join('\n');}
+function renderTabButton(id,label){return `<button class="tab-btn ${state.activeTab===id?'active':''}" data-tab="${id}">${label}</button>`;}
+function renderSubtabButton(id,label){return `<button class="subtab-btn ${state.activeBroaderSubtab===id?'active':''}" data-subtab="${id}">${label}</button>`;}
+const BROADER_GROUPS = [
+  {id:'aml02', label:'Proportionality, resilience, and upgrades', filter:(c)=>c.id==='AML_02'},
+  {id:'cdd', label:'CDD / KYC / KYB', filter:(c)=>c.domain==='CDD/KYC/KYB'},
+  {id:'sanctions', label:'Sanctions / PEP', filter:(c)=>c.domain==='Sanctions / PEP'},
+  {id:'risk', label:'Risk Assessment', filter:(c)=>c.domain==='Risk Assessment'},
+  {id:'tm', label:'Transaction Monitoring', filter:(c)=>c.domain==='Transaction Monitoring'},
+  {id:'fraud', label:'Fraud Monitoring', filter:(c)=>c.domain==='Fraud Monitoring'},
+  {id:'case', label:'Case Management', filter:(c)=>c.domain==='Case Management'},
+  {id:'reporting', label:'Reporting', filter:(c)=>c.domain==='Reporting'},
+  {id:'audit', label:'Audit & Governance', filter:(c)=>c.domain==='Audit & Governance'},
+  {id:'integration', label:'Integration & Scalability', filter:(c)=>c.domain==='Integration & Scalability'},
+  {id:'security', label:'Security & Data Protection', filter:(c)=>c.domain==='Security & Data Protection'},
+  {id:'ui', label:'UI & Customisation', filter:(c)=>c.domain==='UI & Customisation'},
+  {id:'other', label:'Implementation & Third Parties', filter:(c)=>c.domain==='Implementation & Third Parties'}
+];
+function renderChecklist(items,group,selected){return items.map(item=>`<label class="check-item"><input type="checkbox" data-group="${group}" value="${escapeHtml(item)}" ${selected.includes(item)?'checked':''}/><span>${escapeHtml(item)}</span></label>`).join('');}
+function renderControls(filterFn){return CONTROL_LIBRARY.filter(filterFn).map(control=>{const answers=state.answers[control.id]||[]; const pct=(answers.reduce((s,a)=>s+a,0)/(control.subs.length*5))*100; return `<div class="control"><div class="control-head"><div><div class="control-name">${escapeHtml(control.name)}</div><div class="control-meta"><span class="pill">CBN ${escapeHtml(control.guidelineRef)}</span><span class="pill">${escapeHtml(control.guidelineLabel)}</span><span class="badge ${control.requirement==='Mandatory'?'badge-mandatory':'badge-recommended'}">${escapeHtml(control.requirement)}</span><span class="pill">${escapeHtml(control.domain)}</span><span class="pill">Weight ${control.weight}</span></div></div><div><div class="muted" style="margin-bottom:4px">Control maturity ${pct.toFixed(1)}%</div><div class="progress"><div style="width:${pct.toFixed(1)}%"></div></div></div></div>${control.subs.map((sub,i)=>{const ev=state.evidence[control.id][i]; const score=answers[i]; return `<div class="subcontrol"><div class="subcontrol-top"><div><div>${escapeHtml(sub)}</div><div class="muted" style="margin-top:4px">Guideline reference: ${escapeHtml(control.guidelineRef)} ${escapeHtml(control.guidelineLabel)}</div></div><div><label>Maturity score</label><select data-control="${control.id}" data-index="${i}" data-kind="score">${MATURITY_LABELS.map((lab,idx)=>`<option value="${idx}" ${score===idx?'selected':''}>${lab}</option>`).join('')}</select></div></div><div style="margin-top:8px"><span class="badge badge-${score}">${MATURITY_LABELS[score]}</span> <span class="pill">Evidence: ${escapeHtml(ev.status)}</span></div><div class="evidence-grid"><div><label>Evidence status</label><select data-control="${control.id}" data-index="${i}" data-kind="ev-status">${['Missing','Partial','Available'].map(v=>`<option ${ev.status===v?'selected':''}>${v}</option>`).join('')}</select></div><div><label>Policy / procedure reference</label><input data-control="${control.id}" data-index="${i}" data-kind="ev-policy" value="${escapeHtml(ev.policyRef)}" /></div><div><label>System / module reference</label><input data-control="${control.id}" data-index="${i}" data-kind="ev-system" value="${escapeHtml(ev.systemRef)}" /></div><div><label>Screenshot / doc reference</label><input data-control="${control.id}" data-index="${i}" data-kind="ev-screen" value="${escapeHtml(ev.screenshotRef)}" /></div></div><label>Assessor comment</label><textarea data-control="${control.id}" data-index="${i}" data-kind="ev-comment">${escapeHtml(ev.comment)}</textarea></div>`;}).join('')}</div>`;}).join('');}
+function render(){
+  const calc=compute(); const resultsHidden=!state.generated; const summary=summaryText(calc); const saves=loadSnapshots();
+  document.getElementById('app').innerHTML = `
+    <div class="wrap">
+      <div class="hero">
+        <div>
+          <h1>CBN Baseline Readiness Workbench Pro</h1>
+          <p class="muted">Adds local save/load, report preview, evidence coverage analytics, and print-ready report export.</p>
+        </div>
+        <div class="btn-row no-print">
+          <button class="btn-alt" id="loadDemoBtn">Load Tier 2 Bank Demo</button>
+          <button class="btn-alt" id="saveDraftBtn">Save Draft Locally</button>
+          <button class="btn-alt" id="clearBtn">Clear Form</button>
+          <button class="btn" id="generateBtn">Generate Results</button>
+        </div>
+      </div>
+
+      <div class="tabbar no-print">
+        ${renderTabButton('input','Assessment / Input')}
+        ${renderTabButton('core','Core AML Coverage')}
+        ${renderTabButton('broader','Broader Baseline Controls')}
+        ${renderTabButton('governance','Governance & Technology')}
+        ${renderTabButton('results','Results / Analytics')}
+        ${renderTabButton('report','Report Preview')}
+        ${renderTabButton('downloads','Downloads / Export')}
+      </div>
+
+      <div class="tab-panel ${state.activeTab==='input'?'active':''}">
+        <div class="grid-2">
+          <div class="card">
+            <h2>Institution profile</h2>
+            <div class="grid-2">
+              <div><label>Assessment title</label><input id="assessmentTitle" value="${escapeHtml(state.assessmentTitle)}" /></div>
+              <div><label>Institution name</label><input id="institutionName" value="${escapeHtml(state.institutionName)}" /></div>
+              <div><label>Institution type</label><select id="institutionType">${['DMB','OFI','MMO','PSP','MFB'].map(v=>`<option ${state.institutionType===v?'selected':''}>${v}</option>`).join('')}</select></div>
+              <div><label>Risk tier</label><select id="riskTier">${['Low','Medium','High'].map(v=>`<option ${state.riskTier===v?'selected':''}>${v}</option>`).join('')}</select></div>
+              <div><label>CBN roadmap deadline</label><input id="deadline" value="${escapeHtml(state.deadline)}" /></div>
+              <div><label>Transaction profile</label><input id="transactionProfile" value="${escapeHtml(state.transactionProfile)}" /></div>
+            </div>
+            <label>Channels</label><textarea id="channels">${escapeHtml(state.channels)}</textarea>
+            <label>Products</label><textarea id="products">${escapeHtml(state.products)}</textarea>
+            <label>Geographic footprint</label><textarea id="footprint">${escapeHtml(state.footprint)}</textarea>
+            <label>Consultant notes</label><textarea id="notes">${escapeHtml(state.notes)}</textarea>
+          </div>
+
+          <div class="card">
+            <h2>Scope inventory</h2>
+            <label>Systems and channels in scope</label>
+            <div class="check-grid">${renderChecklist(SYSTEM_SCOPE_OPTIONS,'systemScope',state.systemScope)}</div>
+            <label style="margin-top:12px">Customer segments in scope</label>
+            <div class="check-grid">${renderChecklist(CUSTOMER_SEGMENTS,'customerSegments',state.customerSegments)}</div>
+            <div class="callout" style="margin-top:14px">
+              Use <strong>Save Draft Locally</strong> to preserve work in the browser and reopen it from the saved assessments list below.
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:22px">
+          <div class="card">
+            <h2>Saved assessments</h2>
+            ${saves.length ? saves.map(s=>`<div class="save-item"><strong>${escapeHtml(s.title)}</strong><div class="muted">${escapeHtml(s.savedAt)}</div><div class="btn-row" style="margin-top:8px"><button class="btn-alt" data-load="${s.id}">Load</button><button class="btn-alt" data-del="${s.id}">Delete</button></div></div>`).join('') : '<div class="muted">No saved assessments yet.</div>'}
+          </div>
+          <div class="card">
+            <h2>Assessment flow</h2>
+            <p class="muted">Complete the institution profile and scope here, then move to <strong>Core AML Coverage</strong> and <strong>Broader Baseline Controls</strong> to score the controls.</p>
+            <div class="callout" style="margin-top:12px">
+              The broader controls now have their own dedicated tab with sub-tabs by domain for a cleaner workflow.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel ${state.activeTab==='core'?'active':''}">
+        <div class="card">
+          <h2>Core automated AML solution coverage</h2>
+          ${renderControls(c=>c.id==='AML_01')}
+        </div>
+      </div>
+
+
+      <div class="tab-panel ${state.activeTab==='broader'?'active':''}">
+        <div class="card">
+          <h2>Broader baseline controls</h2>
+          <p class="muted">The non-core baseline controls are grouped into logical sub-tabs by category/domain to make the assessment easier to navigate.</p>
+          <div class="subtabbar no-print">
+            ${BROADER_GROUPS.map(g=>renderSubtabButton(g.id,g.label)).join('')}
+          </div>
+          <div>
+            ${renderControls(BROADER_GROUPS.find(g=>g.id===state.activeBroaderSubtab)?.filter || BROADER_GROUPS[0].filter)}
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel ${state.activeTab==='governance'?'active':''}">
+        <div class="grid-2">
+          <div class="card">
+            <h2>Governance & resources</h2>
+            <div class="grid-2">
+              <div><label>MLRO / CCO</label><input id="govMlro" value="${escapeHtml(state.governance.mlro)}" /></div>
+              <div><label>Board oversight committee</label><input id="govBoard" value="${escapeHtml(state.governance.boardCommittee)}" /></div>
+              <div><label>Executive sponsor</label><input id="govExec" value="${escapeHtml(state.governance.execSponsor)}" /></div>
+              <div><label>Technology owner</label><input id="govTech" value="${escapeHtml(state.governance.technologyOwner)}" /></div>
+              <div><label>Programme manager</label><input id="govPmo" value="${escapeHtml(state.governance.projectManager)}" /></div>
+              <div><label>Internal audit owner</label><input id="govAudit" value="${escapeHtml(state.governance.internalAuditOwner)}" /></div>
+              <div><label>Reporting cadence</label><select id="govCadence">${['Weekly','Bi-weekly','Monthly','Quarterly'].map(v=>`<option ${state.governance.reportingCadence===v?'selected':''}>${v}</option>`).join('')}</select></div>
+            </div>
+            <label>Staffing / resourcing summary</label><textarea id="govStaff">${escapeHtml(state.governance.staffingPlan)}</textarea>
+          </div>
+
+          <div class="card">
+            <h2>Technology strategy</h2>
+            <div class="grid-2">
+              <div><label>Current AML platform</label><input id="techPlatform" value="${escapeHtml(state.technologyStrategy.currentAmlPlatform)}" /></div>
+              <div><label>Screening engine</label><input id="techScreening" value="${escapeHtml(state.technologyStrategy.screeningEngine)}" /></div>
+              <div><label>Deployment model</label><select id="techDeploy">${['On-prem','Cloud','Hybrid'].map(v=>`<option ${state.technologyStrategy.deploymentModel===v?'selected':''}>${v}</option>`).join('')}</select></div>
+              <div><label>AI/ML usage</label><select id="techAi">${['Not planned','Planned','In pilot','In production'].map(v=>`<option ${state.technologyStrategy.aiMlUsage===v?'selected':''}>${v}</option>`).join('')}</select></div>
+              <div><label>BVN integration</label><select id="techBvn">${['Not planned','Planned','In progress','Implemented'].map(v=>`<option ${state.technologyStrategy.bvnIntegration===v?'selected':''}>${v}</option>`).join('')}</select></div>
+              <div><label>NIN integration</label><select id="techNin">${['Not planned','Planned','In progress','Implemented'].map(v=>`<option ${state.technologyStrategy.ninIntegration===v?'selected':''}>${v}</option>`).join('')}</select></div>
+            </div>
+            <label>Data architecture</label><textarea id="techData">${escapeHtml(state.technologyStrategy.dataArchitecture)}</textarea>
+            <label>Integration approach</label><textarea id="techIntegration">${escapeHtml(state.technologyStrategy.integrationApproach)}</textarea>
+            <label>Vendor / third-party model</label><textarea id="techVendor">${escapeHtml(state.technologyStrategy.vendorModel)}</textarea>
+            <label>Milestone notes</label><textarea id="techMilestones">${escapeHtml(state.technologyStrategy.milestoneNotes)}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel ${state.activeTab==='results'?'active':''}">
+        <div class="${resultsHidden?'card':'hidden'}"><h2>Results / Analytics</h2><div class="note">Results appear only after you click <strong>Generate Results</strong>.</div></div>
+        <div class="${resultsHidden?'hidden':''}">
+          <div class="metrics">
+            <div class="metric"><div class="label">Overall readiness</div><div class="value">${calc.overall.toFixed(1)}%</div><div class="sub">Risk-weighted readiness</div></div>
+            <div class="metric"><div class="label">Average maturity</div><div class="value">${calc.avgMaturity.toFixed(2)}</div><div class="sub">Average score / 5</div></div>
+            <div class="metric"><div class="label">Evidence coverage</div><div class="value">${calc.evidenceCoverage.toFixed(1)}%</div><div class="sub">Evidence completeness</div></div>
+            <div class="metric"><div class="label">Open gaps</div><div class="value">${calc.roadmap.length}</div><div class="sub">Sub-controls below 5</div></div>
+            <div class="metric"><div class="label">Phase 1 gaps</div><div class="value">${calc.phaseBuckets['Phase 1']}</div><div class="sub">Critical actions</div></div>
+            <div class="metric"><div class="label">High priority gaps</div><div class="value">${calc.gapCounts.high}</div><div class="sub">Urgent items</div></div>
+          </div>
+
+          <div class="grid-2" style="margin-top:22px">
+            <div class="card">
+              <h2>Evidence coverage by domain</h2>
+              <div class="bars">
+                ${calc.evidenceRows.map(d=>`<div class="bar-row"><div>${escapeHtml(d.domain)}</div><div class="bar-track"><div class="bar-fill" style="width:${d.coverage.toFixed(1)}%"></div></div><div>${d.coverage.toFixed(1)}%</div></div>`).join('')}
+              </div>
+            </div>
+            <div class="card">
+              <h2>Controls with maturity but missing evidence</h2>
+              <table>
+                <thead><tr><th>CBN Ref</th><th>Control</th><th>Sub-control</th><th>Maturity</th></tr></thead>
+                <tbody>
+                  ${calc.missingEvidenceRows.length ? calc.missingEvidenceRows.slice(0,20).map(r=>`<tr><td>${escapeHtml(r.guidelineRef)}</td><td>${escapeHtml(r.control)}</td><td>${escapeHtml(r.subControl)}</td><td>${escapeHtml(r.maturityLabel)}</td></tr>`).join('') : '<tr><td colspan="4">No maturity-scored controls are missing evidence.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:22px">
+            <div class="card">
+              <h2>Domain score analytics</h2>
+              <div class="bars">
+                ${calc.domainScores.map(d=>`<div class="bar-row"><div>${escapeHtml(d.domain)}</div><div class="bar-track"><div class="bar-fill" style="width:${d.score.toFixed(1)}%"></div></div><div>${d.score.toFixed(1)}%</div></div>`).join('')}
+              </div>
+            </div>
+            <div class="card">
+              <h2>Top gap domains</h2>
+              <div class="bars">
+                ${calc.topGapDomains.map(d=>`<div class="bar-row"><div>${escapeHtml(d.domain)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,d.count*8)}%"></div></div><div>${d.count}</div></div>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel ${state.activeTab==='report'?'active report-visible':''}">
+        <div class="${resultsHidden?'card':'hidden'}"><h2>Report Preview</h2><div class="note">Generate results first to preview the consolidated report.</div></div>
+        <div class="${resultsHidden?'hidden':''}">
+          <div class="card report-section">
+            <h2>Executive Summary</h2>
+            <div class="summary-box">${escapeHtml(summary)}</div>
+          </div>
+          <div class="card report-section">
+            <h2>Current State Assessment</h2>
+            <table><thead><tr><th>Domain</th><th>Score</th></tr></thead><tbody>${calc.domainScores.map(d=>`<tr><td>${escapeHtml(d.domain)}</td><td>${d.score.toFixed(1)}%</td></tr>`).join('')}</tbody></table>
+          </div>
+          <div class="card report-section">
+            <h2>Gap Analysis Against Baseline</h2>
+            <table><thead><tr><th>Priority</th><th>Guideline</th><th>Control</th><th>Maturity</th><th>Evidence</th></tr></thead><tbody>${calc.roadmap.map(item=>`<tr><td>${item.priority}</td><td>${escapeHtml(item.guidelineRef)} ${escapeHtml(item.guidelineLabel)}</td><td>${escapeHtml(item.action)}</td><td>${escapeHtml(item.maturityLabel)}</td><td>${escapeHtml(item.evidenceStatus)}</td></tr>`).join('')}</tbody></table>
+          </div>
+          <div class="card report-section">
+            <h2>Implementation Roadmap</h2>
+            <table><thead><tr><th>Phase</th><th>Priority</th><th>Action</th><th>Owner</th><th>Timeline</th></tr></thead><tbody>${calc.roadmap.map(item=>`<tr><td>${item.phase}</td><td>${item.priority}</td><td>${escapeHtml(item.action)}</td><td>${escapeHtml(item.owner)}</td><td>${escapeHtml(item.timeline)}</td></tr>`).join('')}</tbody></table>
+          </div>
+          <div class="grid-2">
+            <div class="card report-section"><h2>Governance Summary</h2><div class="summary-box">${escapeHtml(mdGovernance())}</div></div>
+            <div class="card report-section"><h2>Technology Strategy</h2><div class="summary-box">${escapeHtml(mdTechnology())}</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel ${state.activeTab==='downloads'?'active':''}">
+        <div class="card">
+          <h2>Downloads / Export</h2>
+          <div class="${resultsHidden?'note':'hidden'}">Generate results first to enable downloads and report export.</div>
+          <div class="btn-row ${resultsHidden?'hidden':''}">
+            <button class="btn" id="dlCurrentMd">Current state (.md)</button>
+            <button class="btn-alt" id="dlCurrentCsv">Current state (.csv)</button>
+            <button class="btn" id="dlGapMd">Gap analysis (.md)</button>
+            <button class="btn-alt" id="dlGapCsv">Gap analysis (.csv)</button>
+            <button class="btn" id="dlRoadmapMd">Roadmap (.md)</button>
+            <button class="btn" id="dlGovMd">Governance (.md)</button>
+            <button class="btn" id="dlTechMd">Technology (.md)</button>
+            <button class="btn-alt" id="dlSummaryTxt">Executive summary (.txt)</button>
+            <button class="btn-alt" id="dlReportHtml">Roadmap report (.html)</button>
+            <button class="btn-alt" id="printReportBtn">Print report / Save PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  bindEvents(calc);
+}
+function collectForm(){
+  state.assessmentTitle=document.getElementById('assessmentTitle')?.value || state.assessmentTitle;
+  state.institutionName=document.getElementById('institutionName')?.value || state.institutionName;
+  state.institutionType=document.getElementById('institutionType')?.value || state.institutionType;
+  state.riskTier=document.getElementById('riskTier')?.value || state.riskTier;
+  state.deadline=document.getElementById('deadline')?.value || state.deadline;
+  state.transactionProfile=document.getElementById('transactionProfile')?.value || state.transactionProfile;
+  state.channels=document.getElementById('channels')?.value || state.channels;
+  state.products=document.getElementById('products')?.value || state.products;
+  state.footprint=document.getElementById('footprint')?.value || state.footprint;
+  state.notes=document.getElementById('notes')?.value || state.notes;
+  state.systemScope=Array.from(document.querySelectorAll('input[data-group="systemScope"]:checked')).map(el=>el.value);
+  state.customerSegments=Array.from(document.querySelectorAll('input[data-group="customerSegments"]:checked')).map(el=>el.value);
+  state.governance.mlro=document.getElementById('govMlro')?.value || state.governance.mlro;
+  state.governance.boardCommittee=document.getElementById('govBoard')?.value || state.governance.boardCommittee;
+  state.governance.execSponsor=document.getElementById('govExec')?.value || state.governance.execSponsor;
+  state.governance.technologyOwner=document.getElementById('govTech')?.value || state.governance.technologyOwner;
+  state.governance.projectManager=document.getElementById('govPmo')?.value || state.governance.projectManager;
+  state.governance.internalAuditOwner=document.getElementById('govAudit')?.value || state.governance.internalAuditOwner;
+  state.governance.staffingPlan=document.getElementById('govStaff')?.value || state.governance.staffingPlan;
+  state.governance.reportingCadence=document.getElementById('govCadence')?.value || state.governance.reportingCadence;
+  state.technologyStrategy.currentAmlPlatform=document.getElementById('techPlatform')?.value || state.technologyStrategy.currentAmlPlatform;
+  state.technologyStrategy.screeningEngine=document.getElementById('techScreening')?.value || state.technologyStrategy.screeningEngine;
+  state.technologyStrategy.deploymentModel=document.getElementById('techDeploy')?.value || state.technologyStrategy.deploymentModel;
+  state.technologyStrategy.bvnIntegration=document.getElementById('techBvn')?.value || state.technologyStrategy.bvnIntegration;
+  state.technologyStrategy.ninIntegration=document.getElementById('techNin')?.value || state.technologyStrategy.ninIntegration;
+  state.technologyStrategy.aiMlUsage=document.getElementById('techAi')?.value || state.technologyStrategy.aiMlUsage;
+  state.technologyStrategy.dataArchitecture=document.getElementById('techData')?.value || state.technologyStrategy.dataArchitecture;
+  state.technologyStrategy.integrationApproach=document.getElementById('techIntegration')?.value || state.technologyStrategy.integrationApproach;
+  state.technologyStrategy.vendorModel=document.getElementById('techVendor')?.value || state.technologyStrategy.vendorModel;
+  state.technologyStrategy.milestoneNotes=document.getElementById('techMilestones')?.value || state.technologyStrategy.milestoneNotes;
+  document.querySelectorAll('select[data-kind="score"]').forEach(el=>{ state.answers[el.dataset.control][Number(el.dataset.index)] = Number(el.value); });
+  document.querySelectorAll('[data-kind="ev-status"]').forEach(el=>{ state.evidence[el.dataset.control][Number(el.dataset.index)].status = el.value; });
+  document.querySelectorAll('[data-kind="ev-policy"]').forEach(el=>{ state.evidence[el.dataset.control][Number(el.dataset.index)].policyRef = el.value; });
+  document.querySelectorAll('[data-kind="ev-system"]').forEach(el=>{ state.evidence[el.dataset.control][Number(el.dataset.index)].systemRef = el.value; });
+  document.querySelectorAll('[data-kind="ev-screen"]').forEach(el=>{ state.evidence[el.dataset.control][Number(el.dataset.index)].screenshotRef = el.value; });
+  document.querySelectorAll('[data-kind="ev-comment"]').forEach(el=>{ state.evidence[el.dataset.control][Number(el.dataset.index)].comment = el.value; });
+}
+function bindEvents(calc){
+  document.querySelectorAll('.tab-btn').forEach(btn=>{ btn.onclick=()=>{ collectForm(); state.activeTab=btn.dataset.tab; render(); }; });
+  document.querySelectorAll('.subtab-btn').forEach(btn=>{ btn.onclick=()=>{ collectForm(); state.activeBroaderSubtab=btn.dataset.subtab; state.activeTab='broader'; render(); }; });
+  document.getElementById('loadDemoBtn').onclick=loadTier2Demo;
+  document.getElementById('saveDraftBtn').onclick=()=>{ collectForm(); saveSnapshot(); render(); };
+  document.getElementById('clearBtn').onclick=()=>{ state=defaultState(); state.activeBroaderSubtab='aml02'; render(); };
+  document.getElementById('generateBtn').onclick=()=>{ collectForm(); state.generated=true; state.activeTab='results'; render(); };
+  document.querySelectorAll('[data-load]').forEach(btn=>btn.onclick=()=>loadSnapshot(btn.dataset.load));
+  document.querySelectorAll('[data-del]').forEach(btn=>btn.onclick=()=>deleteSnapshot(btn.dataset.del));
+  if(document.getElementById('dlCurrentMd')){
+    document.getElementById('dlCurrentMd').onclick=()=>downloadText('current_state_assessment.md', mdCurrentState(calc), 'text/markdown');
+    document.getElementById('dlCurrentCsv').onclick=()=>downloadText('current_state_assessment.csv', csvCurrentState(calc), 'text/csv');
+    document.getElementById('dlGapMd').onclick=()=>downloadText('gap_analysis_against_baseline.md', mdGapAnalysis(calc), 'text/markdown');
+    document.getElementById('dlGapCsv').onclick=()=>downloadText('gap_analysis_against_baseline.csv', csvGap(calc), 'text/csv');
+    document.getElementById('dlRoadmapMd').onclick=()=>downloadText('implementation_roadmap.md', mdRoadmap(calc), 'text/markdown');
+    document.getElementById('dlGovMd').onclick=()=>downloadText('governance_summary.md', mdGovernance(), 'text/markdown');
+    document.getElementById('dlTechMd').onclick=()=>downloadText('technology_strategy.md', mdTechnology(), 'text/markdown');
+    document.getElementById('dlSummaryTxt').onclick=()=>downloadText('executive_submission_summary.txt', summaryText(calc), 'text/plain');
+    document.getElementById('dlReportHtml').onclick=()=>downloadText('cbn_roadmap_report.html', reportHtml(calc), 'text/html');
+    document.getElementById('printReportBtn').onclick=()=>{ state.activeTab='report'; render(); setTimeout(()=>window.print(), 100); };
+  }
+}
+render();
+</script>
+</body>
+</html>
