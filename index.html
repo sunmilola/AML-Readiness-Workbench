@@ -612,20 +612,21 @@
             </div>
             <div class="contact-right">
               <h3 style="font-size:32px;letter-spacing:-.02em">Request a demo</h3>
-              <form class="form-grid" action="https://formsubmit.co/support@inferivastructural.com" method="POST">
+              <form class="form-grid" action="https://formspree.io/f/mbdwvqkg" method="POST">
                 <input type="text" name="name" placeholder="Full name" required />
                 <input type="email" name="email" placeholder="Work email" required />
                 <input type="text" name="institution" placeholder="Institution" required />
                 <textarea name="message" placeholder="Tell us about your compliance environment" required></textarea>
 
-                <!-- Demo routing -->
-                <input type="hidden" name="demo_type" id="demoType" value="General platform demo" />
+            <!-- Demo routing -->
+              <input type="hidden" name="demo_type" id="demoType" value="General platform demo" />
 
-                <!-- FormSubmit settings -->
-                <input type="hidden" name="_captcha" value="false" />
-                <input type="hidden" name="_template" value="table" />
-                <input type="hidden" name="_next" value="https://inferivastructural.com/thanks.html" />
-                <input type="hidden" name="_subject" id="formSubject" value="New platform demo request — Inferiva Structural" />
+            <!-- Formspree settings -->
+              <input type="hidden" name="_redirect" value="https://inferivastructural.com/thanks.html" />
+              <input type="hidden" name="_subject" value="New platform demo request — Inferiva Structural" />
+
+            <!-- Optional honeypot for spam protection -->
+              <input type="text" name="_gotcha" style="display:none">
 
                 <button class="submit-btn" type="submit">Submit enquiry <span class="arrow">→</span></button>
                 <div class="contact-note">We’ll use your work email to respond to your demo request.</div>
