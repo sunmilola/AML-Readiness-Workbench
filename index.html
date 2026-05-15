@@ -612,23 +612,25 @@
             </div>
             <div class="contact-right">
               <h3 style="font-size:32px;letter-spacing:-.02em">Request a demo</h3>
-              <form class="form-grid" id="demoForm" action="https://formspree.io/f/mbdwvqkg" method="POST">
-                <input type="text" name="name" placeholder="Full name" required />
-                <input type="email" name="email" placeholder="Work email" required />
-                <input type="text" name="institution" placeholder="Institution" required />
-                <textarea name="message" placeholder="Tell us about your compliance environment" required></textarea>
+              <div id="formSuccess" data-fs-success class="contact-note" aria-live="polite"></div>
+              <div id="formError" data-fs-error class="contact-note" aria-live="polite"></div>
+              <form id="demoForm" class="form-grid" action="https://formspree.io/f/mbdwvqkg" method="POST">
+                <input type="text" name="name" placeholder="Full name" required data-fs-field />
+                <input type="email" name="email" placeholder="Work email" required data-fs-field />
+                <input type="text" name="institution" placeholder="Institution" required data-fs-field />
+                <textarea name="message" placeholder="Tell us about your compliance environment" required data-fs-field></textarea>
 
-            <!-- Demo routing -->
-              <input type="hidden" name="demo_type" id="demoType" value="General platform demo" />
+                <!-- Demo routing -->
+                <input type="hidden" name="demo_type" id="demoType" value="General platform demo" />
 
-            <!-- Formspree settings -->
-              <input type="hidden" name="_subject" id="formSubject" value="New platform demo request — Inferiva Structural" />
+                <!-- Formspree settings -->
+                <input type="hidden" name="_subject" id="formSubject" value="New platform demo request — Inferiva Structural" />
 
-            <!-- Optional honeypot for spam protection -->
-              <input type="text" name="_gotcha" style="display:none">
+                <!-- Optional honeypot for spam protection -->
+                <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
 
-                <button class="submit-btn" type="submit">Submit enquiry <span class="arrow">→</span></button>
-                <div class="contact-note" id="formStatus">We’ll use your work email to respond to your demo request.</div>
+                <button class="submit-btn" id="demoSubmitBtn" type="submit" data-fs-submit-btn>Submit enquiry <span class="arrow">→</span></button>
+                <div class="contact-note">We’ll use your work email to respond to your demo request.</div>
               </form>
             </div>
           </div>
@@ -710,54 +712,6 @@
       }
     });
 
-    const demoForm = document.getElementById("demoForm");
-    if (demoForm) {
-      demoForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const submitButton = demoForm.querySelector("button[type='submit']");
-        const formStatus = document.getElementById("formStatus");
-        const originalButtonText = submitButton ? submitButton.innerHTML : "";
-
-        if (submitButton) {
-          submitButton.disabled = true;
-          submitButton.innerHTML = "Submitting...";
-        }
-        if (formStatus) {
-          formStatus.textContent = "Submitting your request...";
-        }
-
-        try {
-          const response = await fetch(demoForm.action, {
-            method: "POST",
-            body: new FormData(demoForm),
-            headers: {
-              "Accept": "application/json"
-            }
-          });
-
-          if (response.ok) {
-            window.location.href = "https://inferivastructural.com/thanks.html";
-            return;
-          }
-
-          if (formStatus) {
-            formStatus.textContent = "Something went wrong. Please try again or email support@inferivastructural.com.";
-          }
-        } catch (error) {
-          if (formStatus) {
-            formStatus.textContent = "Network error. Please try again or email support@inferivastructural.com.";
-          }
-        } finally {
-          if (submitButton) {
-            submitButton.disabled = false;
-            submitButton.innerHTML = originalButtonText;
-          }
-        }
-      });
-    }
-
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if(entry.isIntersecting) entry.target.classList.add("show");
@@ -771,6 +725,53 @@
 
     const initial = (location.hash || "#home").replace("#","");
     setActivePage(pages.includes(initial) ? initial : "home");
+
+    const demoForm = document.getElementById("demoForm");
+    if (demoForm) {
+      demoForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const submitBtn = document.getElementById("demoSubmitBtn");
+        const successBox = document.getElementById("formSuccess");
+        const errorBox = document.getElementById("formError");
+        if (successBox) successBox.textContent = "";
+        if (errorBox) errorBox.textContent = "";
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Submitting...";
+        }
+
+        try {
+          const response = await fetch(demoForm.action, {
+            method: "POST",
+            body: new FormData(demoForm),
+            headers: { "Accept": "application/json" }
+          });
+
+          if (response.ok) {
+            if (successBox) successBox.textContent = "Thanks — redirecting now.";
+            window.location.href = "https://inferivastructural.com/thanks.html";
+            return;
+          }
+
+          let message = "We could not submit the form. Please try again or email support@inferivastructural.com.";
+          try {
+            const data = await response.json();
+            if (data && data.errors && data.errors.length) {
+              message = data.errors.map((error) => error.message).join(" ");
+            }
+          } catch (_) {}
+          if (errorBox) errorBox.textContent = message;
+        } catch (_) {
+          if (errorBox) errorBox.textContent = "Network error. Please try again or email support@inferivastructural.com.";
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Submit enquiry <span class="arrow">→</span>';
+          }
+        }
+      });
+    }
 
 
     const favicon = encodeURIComponent(`
